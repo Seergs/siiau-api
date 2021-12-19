@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Browser, Frame, Page } from 'puppeteer';
 import { InjectBrowser } from 'nest-puppeteer';
 import constants from '../constants';
+import {Student} from './entities/student-entity';
 
 @Injectable()
 export class StudentService {
@@ -72,7 +73,7 @@ export class StudentService {
   }
 
   async getStudentInfo(page: Page) {
-    const studentInfo = {
+    const studentInfo: Student = {
       code: '',
       name: '',
       campus: '',

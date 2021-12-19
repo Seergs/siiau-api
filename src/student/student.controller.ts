@@ -1,10 +1,12 @@
-import { Controller, Headers, Get, BadRequestException } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiHeaders,
-  ApiResponse,
-} from '@nestjs/swagger';
-import {Student} from './entities/student-entity';
+  Controller,
+  Headers,
+  Get,
+  BadRequestException,
+  Query,
+} from '@nestjs/common';
+import { ApiTags, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import { Student, studentKeys } from './entities/student-entity';
 import { StudentService } from './student.service';
 
 @ApiTags('student')
@@ -34,10 +36,24 @@ export class StudentController {
       example: 'mypassword',
     },
   ])
-  getStudent(@Headers() headers: any) {
+  getStudent(@Headers() headers: any, @Query() query: Record<string, any>) {
     const studentCode = headers['x-student-code'];
     const studentNip = headers['x-student-nip'];
-    if (!studentCode || !studentNip) throw new BadRequestException('Missing headers')
-    return this.studentService.getStudent(studentCode, studentNip);
+    const paramsRequested = this.parseStudentInfoQuery(query['query']);
+    if (!studentCode || !studentNip)
+      throw new BadRequestException('Missing headers');
+    return this.studentService.getStudent(
+      studentCode,
+      studentNip,
+      paramsRequested,
+    );
+  }
+
+  parseStudentInfoQuery(query: string): string[] {
+    const allParams = studentKeys;
+    if (!query) {
+      return allParams;
+    }
+    return query.split(',');
   }
 }

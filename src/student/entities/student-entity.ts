@@ -1,5 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 export class Student {
+  constructor() {
+    this.code= '';
+    this.name = ''
+    this.campus = ''
+    this.career = ''
+    this.degree = ''
+    this.status = ''
+    this.location = ''
+    this.lastSemester = ''
+    this.admissionDate = ''
+  }
+
   @ApiProperty({ example: '217758497' })
   code: string;
 
@@ -29,3 +42,5 @@ export class Student {
   @ApiProperty({ example: '2017B' })
   admissionDate: string;
 }
+
+export const studentKeys = Object.keys(new Student());

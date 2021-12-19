@@ -1,153 +1,103 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Browser, Frame, Page } from 'puppeteer';
-import { InjectBrowser } from 'nest-puppeteer';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Page } from 'puppeteer';
 import constants from '../constants';
-import {Student} from './entities/student-entity';
+import { Student, studentKeys } from './entities/student-entity';
+import {PageService} from 'src/page/page.service';
 
 @Injectable()
 export class StudentService {
-  constructor(@InjectBrowser() private readonly browser: Browser) {}
+  private readonly logger = new Logger(StudentService.name);
 
-  async setUpInitialPage() {
-    const page = await this.browser.newPage();
-    await page.goto(constants.urls.homePage);
-    return page;
+  constructor(private readonly pageService: PageService) {}
+
+  async getStudent(
+    studentCode: string,
+    studentNip: string,
+    paramsRequested: string[],
+  ) {
+    try {
+      const page = await this.pageService.setUpInitialPage(constants.urls.homePage);
+      const isLoggedIn = await this.login(page, studentCode, studentNip);
+      if (!isLoggedIn) return 'Invalid credentials';
+      await this.navigateToRequestedPage(page);
+      const studentInfo = await this.getStudentInfo(page, paramsRequested);
+      await page.close();
+      return studentInfo;
+    } catch (e) {
+      this.logger.error(e);
+      return 'Something went wrong getting the student information';
+    }
   }
 
   async login(page: Page, studentCode: string, studentNip: string) {
     try {
-      const loginFrame = this.getFrameFromPage(page, 'mainFrame');
+      const loginFrame = PageService.getFrameFromPage(page, 'mainFrame');
       await loginFrame.type(constants.selectors.login.code, studentCode);
       await loginFrame.type(constants.selectors.login.nip, studentNip);
       await loginFrame.click(constants.selectors.login.button);
       await page.waitForTimeout(1000);
-      const homePageFrame = this.getFrameFromPage(page, 'Contenido');
+      const homePageFrame = PageService.getFrameFromPage(page, 'Contenido');
       return (await homePageFrame.content()).includes(
         constants.selectors.home.validator,
       );
     } catch (e) {
-      console.log(e);
+      this.logger.error(e);
       return false;
-    }
-  }
-
-  async getStudent(studentCode: string, studentNip: string) {
-    try {
-      const page = await this.setUpInitialPage();
-      const isLoggedIn = await this.login(page, studentCode, studentNip);
-      if (!isLoggedIn) return 'Invalid credentials';
-      await this.navigateToRequestedPage(page);
-      const studentInfo = await this.getStudentInfo(page);
-      await page.close();
-      return studentInfo;
-    } catch (e) {
-      console.log(e);
-      return 'Something went wrong getting the student information';
     }
   }
 
   async navigateToRequestedPage(page: Page) {
     try {
-      const menuFrame = this.getFrameFromPage(page, 'Menu');
-      const studentsButton = await this.getElementFromWrapper(
-        menuFrame,
-        constants.selectors.home.studentsLink,
-      );
-      await studentsButton.click();
+      const menuFrame = PageService.getFrameFromPage(page, 'Menu');
+      await PageService.clickElementOfWrapper(menuFrame, constants.selectors.home.studentsLink);
       await page.waitForTimeout(1000);
-      const academicButton = await this.getElementFromWrapper(
-        menuFrame,
-        constants.selectors.home.academicLink,
-      );
-      await academicButton.click();
+
+      await PageService.clickElementOfWrapper(menuFrame, constants.selectors.home.academicLink);
       await page.waitForTimeout(1000);
-      const studentInfoButton = await this.getElementFromWrapper(
-        menuFrame,
-        constants.selectors.home.studentInfo,
-      );
-      await studentInfoButton.click();
-      await page.waitForTimeout(3000);
+
+      await PageService.clickElementOfWrapper(menuFrame, constants.selectors.home.studentInfo);
+
+      const contentFrame = PageService.getFrameFromPage(page, 'Contenido');
+      let isStudentInfoPageLoaded = false;
+      let retryCounter = 0
+      while(!isStudentInfoPageLoaded && retryCounter < 5) {
+        await page.waitForTimeout(1000);
+        const contentFrameContent = await contentFrame.content();
+        if (contentFrameContent.includes(constants.selectors.studentInfo.validator)) {
+          this.logger.log(`User information page loaded after ${retryCounter} retries`);
+          isStudentInfoPageLoaded = true;
+        } else {
+          retryCounter++;
+        }
+      }
+      if (!isStudentInfoPageLoaded) {
+        this.logger.error("Student info page was not loaded after 5 retries, aborting")
+        throw new InternalServerErrorException("Something went wrong, please try again later");
+      }
     } catch (e) {
-      console.log(e);
+      this.logger.error(e);
     }
   }
 
-  async getStudentInfo(page: Page) {
-    const studentInfo: Student = {
-      code: '',
-      name: '',
-      campus: '',
-      career: '',
-      degree: '',
-      status: '',
-      location: '',
-      lastSemester: '',
-      admissionDate: '',
-    };
-    const frame = this.getFrameFromPage(page, 'Contenido');
-    const code = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.code,
-    );
-    studentInfo.code = await code.evaluate((e) => e.textContent);
-    const name = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.name,
-    );
-    studentInfo.name = await name.evaluate((e) => e.textContent);
-    const campus = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.campus,
-    );
-    studentInfo.campus = await campus.evaluate((e) => e.textContent);
-    const career = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.career,
-    );
-    studentInfo.career = await career.evaluate((e) => e.textContent);
-    const degree = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.degree,
-    );
-    studentInfo.degree = await degree.evaluate((e) => e.textContent);
-    const status = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.status,
-    );
-    studentInfo.status = await status.evaluate((e) => e.textContent);
-    const location = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.location,
-    );
-    studentInfo.location = await location.evaluate((e) => e.textContent);
-    const lastSemester = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.lastSemester,
-    );
-    studentInfo.lastSemester = await lastSemester.evaluate(
-      (e) => e.textContent,
-    );
-    const admissionDate = await this.getElementFromWrapper(
-      frame,
-      constants.selectors.studentInfo.admissionDate,
-    );
-    studentInfo.admissionDate = await admissionDate.evaluate(
-      (e) => e.textContent,
-    );
-    return studentInfo;
+  async getStudentInfo(page: Page, paramsRequested: string[]) {
+    const student = new Student();
+    const totalParams = studentKeys;
+    const frame = PageService.getFrameFromPage(page, 'Contenido');
+
+    for (const param of totalParams) {
+      const element = await PageService.getElementFromWrapper(frame, constants.selectors.studentInfo[param])
+      student[param] = await element.evaluate(e => e.textContent);
+    }
+
+    this.filterUnrequestedParams(student, paramsRequested);
+    return student;
   }
 
-  getFrameFromPage(page: Page, frameName: string) {
-    const frame = page.frames().find((frame) => frame.name() === frameName);
-    if (!frame)
-      throw new InternalServerErrorException('No frame found ' + frameName);
-    return frame;
-  }
-
-  async getElementFromWrapper(wrapper: Page | Frame, selector: string) {
-    const [element] = await wrapper.$x(selector);
-    if (!element)
-      throw new InternalServerErrorException(`Element ${selector} not found`);
-    return element;
+  filterUnrequestedParams(preResponse: Student, paramsRequested: string[]) {
+    const totalParams = studentKeys;
+    const unrequestedParams = totalParams.filter((p) => !paramsRequested.includes(p));
+    for (const unrequestedParam of unrequestedParams) {
+      delete preResponse[unrequestedParam];
+    }
   }
 }

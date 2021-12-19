@@ -24,6 +24,7 @@ export default {
       career: '//table/tbody/tr[4]/td',
       campus: '//table/tbody/tr[5]/td',
       location: '//table/tbody/tr[6]/td',
+      validator: 'Ficha técnica del estudiante'
     },
   },
 };

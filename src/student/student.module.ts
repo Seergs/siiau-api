@@ -6,6 +6,6 @@ import { PuppeteerModule } from 'nest-puppeteer';
 @Module({
   controllers: [StudentController],
   providers: [StudentService],
-  imports: [PuppeteerModule.forRoot({ignoreDefaultArgs: ['--no-sandbox', '--disable-setuid-sandbox']   })],
+  imports: [PuppeteerModule.forRoot()],
 })
 export class StudentModule {}

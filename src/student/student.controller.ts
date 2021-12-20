@@ -5,7 +5,7 @@ import {
   BadRequestException,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiHeaders, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { Student, studentKeys } from './entities/student-entity';
 import { StudentService } from './student.service';
 
@@ -36,6 +36,14 @@ export class StudentController {
       example: 'mypassword',
     },
   ])
+  @ApiQuery({
+    name: 'query',
+    type: String,
+    example: 'name,code',
+    description:
+      'A comma separated list of the params to be retrieved, in case you want to filter some. If undefined, all properties will be returned. eg (?query=degree,name,status)',
+    required: false,
+  })
   getStudent(@Headers() headers: any, @Query() query: Record<string, any>) {
     const studentCode = headers['x-student-code'];
     const studentNip = headers['x-student-nip'];

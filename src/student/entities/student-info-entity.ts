@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Student {
+export class StudentInfo {
   constructor() {
     this.code= '';
     this.name = ''
@@ -43,4 +43,4 @@ export class Student {
   admissionDate: string;
 }
 
-export const studentKeys = Object.keys(new Student());
+export const studentInfoKeys = Object.keys(new StudentInfo());

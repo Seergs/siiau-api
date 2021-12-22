@@ -6,7 +6,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { Student, studentKeys } from './entities/student-entity';
+import { StudentInfo, studentInfoKeys } from './entities/student-info-entity';
+import {StudentProgress, StudentProgressResponse, StudentProgressTotal} from './entities/student-progress-entity';
 import { StudentService } from './student.service';
 
 @ApiTags('student')
@@ -18,7 +19,7 @@ export class StudentController {
   @ApiResponse({
     status: 200,
     description: 'Retrieves the general information about the student',
-    type: Student,
+    type: StudentInfo,
   })
   @ApiHeaders([
     {
@@ -57,8 +58,36 @@ export class StudentController {
     );
   }
 
+  @Get('/progress')
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieves the progress of the student by Semester/Career/Campus',
+    type: StudentProgressResponse,
+  })
+  @ApiHeaders([
+    {
+      name: 'x-student-code',
+      required: true,
+      description:
+        'The student ID (code) which is used to authenticate to the SIIAU system',
+      example: '217758497',
+    },
+    {
+      name: 'x-student-nip',
+      required: true,
+      description:
+        'The student password (nip) which is used to authenticate to the SIIAU system',
+      example: 'mypassword',
+    },
+  ])
+  getAcademicProgress(@Headers() headers: any) {
+    const studentCode = headers['x-student-code'];
+    const studentNip = headers['x-student-nip'];
+    return this.studentService.getAcademicProgress(studentCode, studentNip);
+  }
+
   parseStudentInfoQuery(query: string): string[] {
-    const allParams = studentKeys;
+    const allParams = studentInfoKeys;
     if (!query) {
       return allParams;
     }

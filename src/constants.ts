@@ -13,6 +13,7 @@ export default {
       studentsLink: "//a[contains(., 'ALUMNOS')]",
       academicLink: "//a[contains(., 'ACADÉMICA')]",
       studentInfo: "//a[contains(., 'Ficha')]",
+      studentGrades: "//a[contains(., 'Boleta')]",
     },
     studentInfo: {
       code: '/html/body/div[3]/table/tbody/tr[2]/td[1]',
@@ -44,6 +45,10 @@ export default {
         7: 'totalCredits',
         8: 'totalPercentage'
       }
+    },
+    studentGrades: {
+      validator: 'Boleta de calificaciones',
+      cell: '/html/body/div/div[4]/table/tbody/tr[{i}]/td[{j}]' 
     }
   },
 };

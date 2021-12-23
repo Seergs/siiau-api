@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { StudentInfo, studentInfoKeys } from './entities/student-info-entity';
-import {StudentProgress, StudentProgressResponse, StudentProgressTotal} from './entities/student-progress-entity';
+import { StudentProgressResponse } from './entities/student-progress-entity';
 import { StudentService } from './student.service';
 
 @ApiTags('student')
@@ -84,6 +84,13 @@ export class StudentController {
     const studentCode = headers['x-student-code'];
     const studentNip = headers['x-student-nip'];
     return this.studentService.getAcademicProgress(studentCode, studentNip);
+  }
+
+  @Get('/currentSemester/grades')
+  getSemesterGrades(@Headers() headers: any) {
+    const studentCode = headers['x-student-code'];
+    const studentNip = headers['x-student-nip'];
+    return this.studentService.getSemesterGrades(studentCode, studentNip);
   }
 
   parseStudentInfoQuery(query: string): string[] {

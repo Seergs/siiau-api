@@ -14,14 +14,14 @@ export class StudentInfoInteractor {
 
   private static async navigateToRequestedPage(page: Page) {
     try {
-      const menuFrame = PuppeteerService.getFrameFromPage(page, 'Menu');
+      const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
       await page.waitForTimeout(1000);
       await this.navigateToAcademicMenu(menuFrame);
       await page.waitForTimeout(1000);
       await this.navigateToStudentInfoMenu(menuFrame);
 
-      const contentFrame = PuppeteerService.getFrameFromPage(page, 'Contenido');
+      const contentFrame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;
       while (!isStudentInfoPageLoaded && retryCounter < 5) {
@@ -77,7 +77,7 @@ export class StudentInfoInteractor {
   private static async getInfo(page: Page, paramsRequested: string[]) {
     const student = new StudentInfo();
     const totalParams = studentInfoKeys;
-    const frame = PuppeteerService.getFrameFromPage(page, 'Contenido');
+    const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
     for (const param of totalParams) {
       const element = await PuppeteerService.getElementFromWrapper(

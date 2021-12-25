@@ -48,7 +48,16 @@ export default {
     },
     studentGrades: {
       validator: 'Boleta de calificaciones',
-      cell: '/html/body/div/div[4]/table/tbody/tr[{i}]/td[{j}]' 
+      cell: '/html/body/div/div[4]/table/tbody/tr[{i}]/td[{j}]' ,
+      cells: {
+	1: 'nrc',
+	2: 'subjectId',
+	3: 'subject',
+	4: 'grade',
+	5: 'isInKardex',
+	6: 'grade',
+	7: 'isInKardex'
+      }
     }
   },
 };

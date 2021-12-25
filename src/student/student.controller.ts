@@ -1,14 +1,15 @@
 import {
   Controller,
-  Headers,
   Get,
-  BadRequestException,
   Query,
+	Res,
 } from '@nestjs/common';
+import { response, Response  } from 'express'
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { StudentInfo, studentInfoKeys } from './entities/student-info-entity';
 import { StudentProgressResponse } from './entities/student-progress-entity';
 import { StudentService } from './student.service';
+import {Page} from 'puppeteer';
 
 @ApiTags('student')
 @Controller('student')
@@ -45,17 +46,10 @@ export class StudentController {
       'A comma separated list of the params to be retrieved, in case you want to filter some. If undefined, all properties will be returned. eg (?query=degree,name,status)',
     required: false,
   })
-  getStudent(@Headers() headers: any, @Query() query: Record<string, any>) {
-    const studentCode = headers['x-student-code'];
-    const studentNip = headers['x-student-nip'];
+  getStudent(@Query() query: Record<string, any>, @Res({passthrough: true}) response: Response) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    if (!studentCode || !studentNip)
-      throw new BadRequestException('Missing headers');
-    return this.studentService.getStudent(
-      studentCode,
-      studentNip,
-      paramsRequested,
-    );
+    const puppeteerPage = response.locals.page as Page;
+    return this.studentService.getStudent(puppeteerPage, paramsRequested);
   }
 
   @Get('/progress')
@@ -80,17 +74,9 @@ export class StudentController {
       example: 'mypassword',
     },
   ])
-  getAcademicProgress(@Headers() headers: any) {
-    const studentCode = headers['x-student-code'];
-    const studentNip = headers['x-student-nip'];
-    return this.studentService.getAcademicProgress(studentCode, studentNip);
-  }
-
-  @Get('/currentSemester/grades')
-  getSemesterGrades(@Headers() headers: any) {
-    const studentCode = headers['x-student-code'];
-    const studentNip = headers['x-student-nip'];
-    return this.studentService.getSemesterGrades(studentCode, studentNip);
+  getAcademicProgress(@Res({passthrough: true}) response: Response) {
+    const puppeteerPage = response.locals.page as Page;
+    return this.studentService.getAcademicProgress(puppeteerPage);
   }
 
   parseStudentInfoQuery(query: string): string[] {

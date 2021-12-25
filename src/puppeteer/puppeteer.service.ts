@@ -13,8 +13,10 @@ export class PuppeteerService {
 
   async setupBrowser() {
     this.browser = await puppeteer.launch({
+      headless: process.env.NODE_ENV === 'production',
       args: ['--no-sandbox','--disable-setuid-sandbox']
     });
+    console.log("Browser instance setup!")
   }
 
   async setUpInitialPage(url: string) {
@@ -23,10 +25,19 @@ export class PuppeteerService {
     return page;
   }
 
-  static getFrameFromPage(page: Page, frameName: string) {
-    const frame = page.frames().find((frame) => frame.name() === frameName);
-    if (!frame)
-      throw new InternalServerErrorException('No frame found ' + frameName);
+  static async getFrameFromPage(page: Page, frameName: string, retries = 3) {
+    let frame: Frame;
+    let i = 0; 
+    while(i < retries) {
+      frame = page.frames().find((frame) => frame.name() === frameName);
+      if (frame) break; 
+      else {
+	await page.waitForTimeout(1000);
+	i++;	
+      }
+    }
+    if (!frame) throw new InternalServerErrorException("Frame not found " + frameName);
+    this.logger.debug("Frame " + frameName + " found after " + i + " retries")
     return frame;
   }
 
@@ -55,7 +66,7 @@ export class PuppeteerService {
       }
     }
     if (!element) throw new InternalServerErrorException("Element with xpath " + selector + "not found");
-    this.logger.log(`Element with xpath ${selector} found after ${retries} retries`);
+    this.logger.debug(`Element with xpath ${selector} found after ${retries} retries`);
     return element;
   }
 

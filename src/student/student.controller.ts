@@ -1,20 +1,19 @@
-import {
-  Controller,
-  Get,
-  Query,
-	Res,
-} from '@nestjs/common';
-import { response, Response  } from 'express'
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { StudentInfo, studentInfoKeys } from './entities/student-info-entity';
 import { StudentProgressResponse } from './entities/student-progress-entity';
 import { StudentService } from './student.service';
-import {Page} from 'puppeteer';
+import { Page } from 'puppeteer';
+import { DatabaseService } from '../database/database.service';
 
 @ApiTags('student')
 @Controller('student')
 export class StudentController {
-  constructor(private readonly studentService: StudentService) {}
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @Get()
   @ApiResponse({
@@ -46,16 +45,22 @@ export class StudentController {
       'A comma separated list of the params to be retrieved, in case you want to filter some. If undefined, all properties will be returned. eg (?query=degree,name,status)',
     required: false,
   })
-  getStudent(@Query() query: Record<string, any>, @Res({passthrough: true}) response: Response) {
+  async getStudent(
+    @Query() query: Record<string, any>,
+    @Res({ passthrough: true }) response: Response,
+    @Req() request: Request
+  ) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
     const puppeteerPage = response.locals.page as Page;
-    return this.studentService.getStudent(puppeteerPage, paramsRequested);
+    await this.databaseService.save('student', request.url)
+    return await this.studentService.getStudent(puppeteerPage, paramsRequested);
   }
 
   @Get('/progress')
   @ApiResponse({
     status: 200,
-    description: 'Retrieves the progress of the student by Semester/Career/Campus',
+    description:
+      'Retrieves the progress of the student by Semester/Career/Campus',
     type: StudentProgressResponse,
   })
   @ApiHeaders([
@@ -74,8 +79,9 @@ export class StudentController {
       example: 'mypassword',
     },
   ])
-  getAcademicProgress(@Res({passthrough: true}) response: Response) {
+  async getAcademicProgress(@Res({ passthrough: true }) response: Response, @Req() request: Request) {
     const puppeteerPage = response.locals.page as Page;
+    await this.databaseService.save('student', request.url)
     return this.studentService.getAcademicProgress(puppeteerPage);
   }
 

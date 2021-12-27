@@ -48,11 +48,11 @@ export class StudentController {
   async getStudent(
     @Query() query: Record<string, any>,
     @Res({ passthrough: true }) response: Response,
-    @Req() request: Request
+    @Req() request: Request,
   ) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
     const puppeteerPage = response.locals.page as Page;
-    await this.databaseService.save('student', request.url)
+    await this.databaseService.save('student', request.url);
     return await this.studentService.getStudent(puppeteerPage, paramsRequested);
   }
 
@@ -79,9 +79,12 @@ export class StudentController {
       example: 'mypassword',
     },
   ])
-  async getAcademicProgress(@Res({ passthrough: true }) response: Response, @Req() request: Request) {
+  async getAcademicProgress(
+    @Res({ passthrough: true }) response: Response,
+    @Req() request: Request,
+  ) {
     const puppeteerPage = response.locals.page as Page;
-    await this.databaseService.save('student', request.url)
+    await this.databaseService.save('student', request.url);
     return this.studentService.getAcademicProgress(puppeteerPage);
   }
 

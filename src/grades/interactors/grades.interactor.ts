@@ -12,20 +12,31 @@ export class GradesInteractor {
   private static readonly logger = new Logger(GradesInteractor.name);
 
   static async getStudentGradesForCurrentCalendar(page: Page) {
-    await this.navigateToRequestedPageForCurrentCalendar(page);
+    await this.navigateToRequestedPage(page, false);
     return await this.getGradesForCurrentCalendar(page);
   }
 
   static async getStudentGradesForCalendar(calendar: string, page: Page) {
-    await this.navigateToRequestedPage(page);
+    await this.navigateToRequestedPage(page, true);
     return await this.getGradesForCalendar(calendar, page);
   }
 
   static async getStudentGradesForAllCalendars(page: Page) {
-    await this.navigateToRequestedPage(page);
+    await this.navigateToRequestedPage(page, true);
   }
 
-  static async navigateToRequestedPageForCurrentCalendar(page: Page) {
+  static async navigateToRequestedPage(
+    page: Page,
+    areGradesFromKardex: boolean,
+  ) {
+    if (areGradesFromKardex) {
+      await this.navigateToKardexPage(page);
+    } else {
+      await this.navigateToReportCardPage(page);
+    }
+  }
+
+  static async navigateToReportCardPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -34,42 +45,16 @@ export class GradesInteractor {
       await page.waitForTimeout(1000);
       await this.navigateToStudentCurrentGradesMenu(menuFrame);
 
-      const contentFrame = await PuppeteerService.getFrameFromPage(
+      await this.waitUntilRequestedPageIsLoaded(
         page,
-        'Contenido',
+        constants.selectors.studentGrades.validator,
       );
-      let isStudentGradePageLoaded = false;
-      let retryCounter = 0;
-      while (!isStudentGradePageLoaded && retryCounter < 5) {
-        await page.waitForTimeout(1000);
-        const contentFrameContent = await contentFrame.content();
-        if (
-          contentFrameContent.includes(
-            constants.selectors.studentGrades.validator,
-          )
-        ) {
-          this.logger.log(
-            `User grades page loaded after ${retryCounter} retries`,
-          );
-          isStudentGradePageLoaded = true;
-        } else {
-          retryCounter++;
-        }
-      }
-      if (!isStudentGradePageLoaded) {
-        this.logger.error(
-          'Student grades page was not loaded after 5 retries, aborting',
-        );
-        throw new InternalServerErrorException(
-          'Something went wrong, please try again later',
-        );
-      }
     } catch (e) {
       this.logger.error(e);
     }
   }
 
-  static async navigateToRequestedPage(page: Page) {
+  static async navigateToKardexPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -78,40 +63,47 @@ export class GradesInteractor {
       await page.waitForTimeout(1000);
       await this.navigateToKardexMenu(menuFrame);
 
-      const contentFrame = await PuppeteerService.getFrameFromPage(
+      await this.waitUntilRequestedPageIsLoaded(
         page,
-        'Contenido',
+        constants.selectors.studentKardex.validator,
       );
-      let isStudentGradePageLoaded = false;
-      let retryCounter = 0;
-      while (!isStudentGradePageLoaded && retryCounter < 5) {
-        await page.waitForTimeout(1000);
-        const contentFrameContent = await contentFrame.content();
-        if (
-          contentFrameContent.includes(
-            constants.selectors.studentKardex.validator,
-          )
-        ) {
-          this.logger.log(
-            `User grades page (kardex) loaded after ${retryCounter} retries`,
-          );
-          isStudentGradePageLoaded = true;
-        } else {
-          retryCounter++;
-        }
-      }
-      if (!isStudentGradePageLoaded) {
-        this.logger.error(
-          'Student grades page (kardex) was not loaded after 5 retries, aborting',
-        );
-        throw new InternalServerErrorException(
-          'Something went wrong, please try again later',
-        );
-      }
     } catch (e) {
       this.logger.error(e);
     }
   }
+
+  private static async waitUntilRequestedPageIsLoaded(
+    page: Page,
+    validator: string,
+  ) {
+    const contentFrame = await PuppeteerService.getFrameFromPage(
+      page,
+      'Contenido',
+    );
+    let isStudentGradePageLoaded = false;
+    let retryCounter = 0;
+    while (!isStudentGradePageLoaded && retryCounter < 5) {
+      await page.waitForTimeout(1000);
+      const contentFrameContent = await contentFrame.content();
+      if (contentFrameContent.includes(validator)) {
+        this.logger.log(
+          `User grades page loaded after ${retryCounter} retries`,
+        );
+        isStudentGradePageLoaded = true;
+      } else {
+        retryCounter++;
+      }
+    }
+    if (!isStudentGradePageLoaded) {
+      this.logger.error(
+        'Student grades page was not loaded after 5 retries, aborting',
+      );
+      throw new InternalServerErrorException(
+        'Something went wrong, please try again later',
+      );
+    }
+  }
+
   private static async getGradesForCurrentCalendar(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
@@ -191,44 +183,16 @@ export class GradesInteractor {
       page,
       'Contenido',
     );
-    const calendarSelector =
-      constants.selectors.studentKardex.calendarHeadingValidator.replace(
-        '{1}',
-        calendar,
-      );
 
     let grades: KardexGrade[] = [];
 
     const NUMBER_OF_COLUMNS = 7;
     const START_COLUMN = 1;
     let thereAreMoreRows = true;
-    let i = 1;
     let j: number;
     let k: number;
-    while (true) {
-      const headingSelector = constants.selectors.studentKardex.calendarHeading;
-      const currentHeadingSelector = headingSelector.replace(
-        '{i}',
-        i.toString(),
-      );
-      try {
-        const heading = await PuppeteerService.getElementFromWrapperNoWait(
-          contentFrame,
-          currentHeadingSelector,
-        );
-        const headingText = await heading.evaluate((e) => e.textContent);
-        if (headingText === calendarSelector) {
-          break;
-        }
-      } catch (e) {
-        this.logger.debug(
-          'Calendar not found in ' +
-            currentHeadingSelector +
-            ', trying next one',
-        );
-      }
-      i++;
-    }
+
+    let i = await this.findRowOfCalendar(calendar, contentFrame);
 
     for (j = i + 2; thereAreMoreRows; ++j) {
       const grade = new KardexGrade();
@@ -247,9 +211,13 @@ export class GradesInteractor {
 
           const text = await cell.evaluate((c) => c.textContent.trim());
           if (text === '' && k < 2) {
-            await this.parseExtraDataForCurrentGrade(grades[grades.length - 1], contentFrame, j);
-	    hasExtraData = true
-	    break;
+            await this.parseExtraDataForCurrentGrade(
+              grades[grades.length - 1],
+              contentFrame,
+              j,
+            );
+            hasExtraData = true;
+            break;
           } else {
             const responseKey = constants.selectors.studentKardex.cells[k];
             grade[responseKey] = text;
@@ -265,6 +233,51 @@ export class GradesInteractor {
     }
     return grades;
   }
+
+  static async findRowOfCalendar(calendar: string, frame: Frame) {
+    let i = 1;
+    const calendarSelector =
+      constants.selectors.studentKardex.calendarHeadingValidator.replace(
+        '{1}',
+        calendar,
+      );
+
+    const table = await PuppeteerService.getElementFromWrapperNoWait(
+      frame,
+      constants.selectors.studentKardex.table,
+    );
+    const tableContent = await table.evaluate((e) => e.textContent);
+    if (!tableContent.includes(calendarSelector))
+      throw new BadRequestException('Calendar ' + calendar + ' not found');
+
+    // Since we already validated the calendar exists, not longer need another weird condition here, it'll break when it finds the correct row
+    while (true) {
+      const headingSelector = constants.selectors.studentKardex.calendarHeading;
+      const currentHeadingSelector = headingSelector.replace(
+        '{i}',
+        i.toString(),
+      );
+      try {
+        const heading = await PuppeteerService.getElementFromWrapperNoWait(
+          frame,
+          currentHeadingSelector,
+        );
+        const headingText = await heading.evaluate((e) => e.textContent);
+        if (headingText === calendarSelector) {
+          break;
+        }
+      } catch (e) {
+        this.logger.debug(
+          'Calendar not found in ' +
+            currentHeadingSelector +
+            ', trying next one',
+        );
+      }
+      i++;
+    }
+    return i;
+  }
+
   static async parseExtraDataForCurrentGrade(
     receivedGrade: KardexGrade,
     frame: Frame,

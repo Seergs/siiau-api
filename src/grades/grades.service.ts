@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
   Injectable,
   Logger,
 } from '@nestjs/common';
@@ -33,6 +34,7 @@ export class GradesService {
       return grades;
     } catch (e) {
       this.logger.error(e);
+      if (e instanceof BadRequestException) throw e
       return 'Something went wrong getting the student grades for calendar ' + calendar;
     }
   }

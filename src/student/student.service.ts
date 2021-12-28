@@ -1,20 +1,11 @@
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import constants from '../constants';
-import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { StudentInfoInteractor } from './interactors/student-info-interactor';
 import { StudentProgressInteractor } from './interactors/student-progress-interactor';
-import {Page} from 'puppeteer';
+import { Page } from 'puppeteer';
 
 @Injectable()
 export class StudentService {
   private readonly logger = new Logger(StudentService.name);
-
-  constructor(
-    private readonly puppeteerService: PuppeteerService,
-  ) {}
 
   async getStudent(page: Page, paramsRequested: string[]) {
     try {
@@ -23,14 +14,13 @@ export class StudentService {
         paramsRequested,
       );
       await page.close();
-      this.logger.log("Done getting student information");
+      this.logger.log('Done getting student information');
       return studentInfo;
     } catch (e) {
       this.logger.error(e);
       return 'Something went wrong getting the student information';
     }
   }
-
 
   async getAcademicProgress(page: Page) {
     try {
@@ -43,5 +33,4 @@ export class StudentService {
       return 'Something went wrong getting the student progress';
     }
   }
-
 }

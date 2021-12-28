@@ -63,6 +63,7 @@ export default {
     studentKardex: {
       validator: 'Nombre de la materia',
       calendarHeading: '//*[@id="leyendaPromedio"]/table[1]/tbody/tr[{i}]/th',
+      table: '//*[@id="leyendaPromedio"]/table[1]',
       calendarHeadingValidator: 'Calendario {1}',
       cell: '//*[@id="leyendaPromedio"]/table[1]/tbody/tr[{j}]/td[{k}]',
       cells: {

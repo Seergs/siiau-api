@@ -9,19 +9,31 @@ import {GradesInteractor} from './interactors/grades.interactor';
 export class GradesService {
   private readonly logger = new Logger(GradesService.name);
 
-  async getGrades(page: Page, semester: string){
-    if (semester === 'current')
-      return this.getCurrentSemesterGrades(page);
+  async getGrades(page: Page, calendar: string){
+    if (calendar === 'current')
+      return this.getGradesForCurrentCalendar(page);
+    return this.getGradesForCalendar(calendar, page)
   }
 
-  async getCurrentSemesterGrades(page: Page) {
+  async getGradesForCurrentCalendar(page: Page) {
     try {
-      const grades = await GradesInteractor.getStudentGradesForCurrentSemester(page);
+      const grades = await GradesInteractor.getStudentGradesForCurrentCalendar(page);
       await page.close();
       return grades;
     } catch (e) {
       this.logger.error(e);
-      return 'Something went wrong getting the student grades for current semester';
+      return 'Something went wrong getting the student grades for current calendar';
+    }
+  }
+
+  async getGradesForCalendar(calendar: string, page: Page) {
+    try {
+      const grades = await GradesInteractor.getStudentGradesForCalendar(calendar, page);
+      await page.close();
+      return grades;
+    } catch (e) {
+      this.logger.error(e);
+      return 'Something went wrong getting the student grades for calendar ' + calendar;
     }
   }
 }

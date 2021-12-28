@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class StudentProgress {
   constructor() {
-    this.semester = '';
+    this.calendar = '';
     this.admission = ''
     this.career = ''
     this.campus = ''
@@ -13,7 +13,7 @@ export class StudentProgress {
   }
 
   @ApiProperty({ example: '2021-B' })
-  semester: string;
+  calendar: string;
 
   @ApiProperty({ example: '2017-B' })
   admission: string;

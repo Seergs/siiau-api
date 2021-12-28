@@ -19,7 +19,7 @@ export class StudentProgressInteractor {
     const START_ROW = 3;
     let thereAreMoreRows = true;
 
-    let semesters: StudentProgress[] = [];
+    let calendars: StudentProgress[] = [];
 
     let i: number;
     let j: number;
@@ -46,11 +46,11 @@ export class StudentProgressInteractor {
         }
       }
       if (thereAreMoreRows) {
-        semesters.push(rowData);
+        calendars.push(rowData);
       }
     }
     const total = await this.getAcademicProgressTotal(frame, i);
-    return new StudentProgressResponse({ semesters, total });
+    return new StudentProgressResponse({ semesters: calendars, total });
   }
 
   private static async getAcademicProgressTotal(frame: Frame, i: number) {

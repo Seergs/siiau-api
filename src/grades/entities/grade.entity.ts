@@ -14,3 +14,21 @@ export class BaseGrade {
   grade: string;
   isInKardex: boolean;
 }
+
+export class KardexGrade {
+  nrc: string;
+  subjectId: string;
+  subject: string;
+  grade: string;
+  type: string;
+  credits: number;
+  date: string;
+  extra?: ExtraKardexData
+}
+
+export class ExtraKardexData {
+    grade: string;
+    type: string;
+    credits: string;
+    date: string;
+}

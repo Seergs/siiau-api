@@ -60,7 +60,7 @@ export class StudentController {
   @ApiResponse({
     status: 200,
     description:
-      'Retrieves the progress of the student by Semester/Career/Campus',
+      'Retrieves the progress of the student by Semester-Calendar/Career/Campus',
     type: StudentProgressResponse,
   })
   @ApiHeaders([

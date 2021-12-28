@@ -9,7 +9,7 @@ export class StudentInfo {
     this.degree = ''
     this.status = ''
     this.location = ''
-    this.lastSemester = ''
+    this.lastCalendar = ''
     this.admissionDate = ''
   }
 
@@ -37,7 +37,7 @@ export class StudentInfo {
   location: string;
 
   @ApiProperty({ example: '2021B' })
-  lastSemester: string;
+  lastCalendar: string;
 
   @ApiProperty({ example: '2017B' })
   admissionDate: string;

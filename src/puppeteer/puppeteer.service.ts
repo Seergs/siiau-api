@@ -65,7 +65,7 @@ export class PuppeteerService {
 	await wrapper.waitForTimeout(1000);
       }
     }
-    if (!element) throw new InternalServerErrorException("Element with xpath " + selector + "not found");
+    if (!element) throw new InternalServerErrorException("Element with xpath " + selector + " not found");
     this.logger.debug(`Element with xpath ${selector} found after ${retries} retries`);
     return element;
   }

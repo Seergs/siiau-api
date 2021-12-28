@@ -14,6 +14,7 @@ export default {
       academicLink: "//a[contains(., 'ACADÉMICA')]",
       studentInfo: "//a[contains(., 'Ficha')]",
       studentGrades: "//a[contains(., 'Boleta')]",
+      studentKardex: "//a[contains(., 'Kárdex')]"
     },
     studentInfo: {
       code: '/html/body/div[3]/table/tbody/tr[2]/td[1]',
@@ -21,7 +22,7 @@ export default {
       status: '/html/body/div[3]/table/tbody/tr[3]/td[1]',
       degree: '/html/body/div[3]/table/tbody/tr[3]/td[2]',
       admissionDate: '/html/body/div[3]/table/tbody/tr[3]/td[3]',
-      lastSemester: '/html/body/div[3]/table/tbody/tr[3]/td[4]',
+      lastCalendar: '/html/body/div[3]/table/tbody/tr[3]/td[4]',
       career: '/html/body/div[3]/table/tbody/tr[4]/td',
       campus: '/html/body/div[3]/table/tbody/tr[5]/td',
       location: '/html/body/div[3]/table/tbody/tr[6]/td',
@@ -31,7 +32,7 @@ export default {
       cell: '/html/body/div[5]/table[1]/tbody/tr[{i}]/td[{j}]',
       totalCell: '/html/body/div[5]/table[1]/tbody/tr[{i}]/th[{j}]',
       regularCells: {
-        1: 'semester',
+        1: 'calendar',
         2: 'admission',
         3: 'career',
         4: 'campus',
@@ -57,6 +58,21 @@ export default {
 	5: 'isInKardex',
 	6: 'grade',
 	7: 'isInKardex'
+      }
+    },
+    studentKardex: {
+      validator: 'Nombre de la materia',
+      calendarHeading: '//*[@id="leyendaPromedio"]/table[1]/tbody/tr[{i}]/th',
+      calendarHeadingValidator: 'Calendario {1}',
+      cell: '//*[@id="leyendaPromedio"]/table[1]/tbody/tr[{j}]/td[{k}]',
+      cells: {
+	1: 'nrc',
+	2: 'subjectId',
+	3: 'subject',
+	4: 'grade',
+	5: 'type',
+	6: 'credits',
+	7: 'date'
       }
     }
   },

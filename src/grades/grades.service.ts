@@ -13,7 +13,21 @@ export class GradesService {
   async getGrades(page: Page, calendar: string){
     if (calendar === 'current')
       return this.getGradesForCurrentCalendar(page);
-    return this.getGradesForCalendar(calendar, page)
+    if (calendar !== undefined) {
+      return this.getGradesForCalendar(calendar, page)
+    }
+    return this.getGradesForAllCalendars(page)
+  }
+
+  async getGradesForAllCalendars(page: Page) {
+    try {
+      const grades = await GradesInteractor.getStudentGradesForAllCalendars(page);
+      await page.close();
+      return grades;
+    } catch (e) {
+      this.logger.error(e);
+      return 'Something went wrong getting the student grades all calendars';
+    }
   }
 
   async getGradesForCurrentCalendar(page: Page) {

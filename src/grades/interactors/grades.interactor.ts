@@ -23,6 +23,7 @@ export class GradesInteractor {
 
   static async getStudentGradesForAllCalendars(page: Page) {
     await this.navigateToRequestedPage(page, true);
+    return await this.getGradesForAllCalendars(page);
   }
 
   static async navigateToRequestedPage(
@@ -178,6 +179,20 @@ export class GradesInteractor {
     );
   }
 
+  private static async getGradesForAllCalendars(page: Page) {
+    const contentFrame = await PuppeteerService.getFrameFromPage(
+      page,
+      'Contenido',
+    );
+    let results = {}
+    const calendars = await this.getAvailableCalendars(contentFrame);
+    for (const calendar of calendars) {
+      const result = await this.getGradesForCalendar(calendar, page)
+      results[calendar] = result
+    }
+    return results;
+  }
+
   private static async getGradesForCalendar(calendar: string, page: Page) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
@@ -323,5 +338,33 @@ export class GradesInteractor {
     } catch (e) {
       this.logger.error(e);
     }
+  }
+
+  static async getAvailableCalendars(frame: Frame) {
+    let calendars = [];
+    const CALENDAR_KEY_START_INDEX = 11;
+    const CALENDAR_LENGTH = 15;
+    const selector = constants.selectors.studentKardex.calendarAll;
+    const frameContent = await frame.content();
+    const indexes = this.getIndexes(frameContent, selector);
+    for (const index of indexes) {
+      // index of the string 'Calendario 17 B', so we need to get a few characters
+      // after to get the actual key '17 B'
+      const calendar = frameContent.substring(
+        index + CALENDAR_KEY_START_INDEX,
+        index + CALENDAR_LENGTH,
+      );
+      calendars.push(calendar);
+    }
+    return calendars;
+  }
+
+  private static getIndexes(text: string, search: string) {
+    let indexes = [];
+    let i = -1;
+    while ((i = text.indexOf(search, i + 1)) !== -1) {
+      indexes.push(i);
+    }
+    return indexes;
   }
 }

@@ -65,6 +65,7 @@ export default {
       calendarHeading: '//*[@id="leyendaPromedio"]/table[1]/tbody/tr[{i}]/th',
       table: '//*[@id="leyendaPromedio"]/table[1]',
       calendarHeadingValidator: 'Calendario {1}',
+      calendarAll: 'Calendario ',
       cell: '//*[@id="leyendaPromedio"]/table[1]/tbody/tr[{j}]/td[{k}]',
       cells: {
 	1: 'nrc',

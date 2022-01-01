@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req, Res } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { StudentInfo, studentInfoKeys } from './entities/student-info-entity';
@@ -86,6 +86,39 @@ export class StudentController {
     const puppeteerPage = response.locals.page as Page;
     await this.databaseService.save('student', request.url);
     return this.studentService.getAcademicProgress(puppeteerPage);
+  }
+
+  @ApiResponse({
+    status: 200,
+    description:
+      'If the credentials are valid and the login is successful',
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'If the credentials are incorrect and the login was not successful',
+  })
+  @ApiHeaders([
+    {
+      name: 'x-student-code',
+      required: true,
+      description:
+        'The student ID (code) which is used to authenticate to the SIIAU system',
+      example: '217758497',
+    },
+    {
+      name: 'x-student-nip',
+      required: true,
+      description:
+        'The student password (nip) which is used to authenticate to the SIIAU system',
+      example: 'mypassword',
+    },
+  ])
+  @Get('/login')
+  login() {
+    // if the request made it this far, it means the user could login
+    // because of the AutheMiddleware so just return
+    return
   }
 
   parseStudentInfoQuery(query: string): string[] {

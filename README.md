@@ -2,7 +2,7 @@
 
 **We do not store student IDs nor passwords on our servers, this is a stateless API**
 
-If you want to see the complete API specification, please see the [API referece](https://siiau-api.herokuapp.com/api)
+If you want to see the complete API specification, please see the [API reference](https://siiau-api.herokuapp.com/api)
 
 Note: For every request you need to send headers `x-student-code` and `x-student-nip` to authenticate the user to the system.
 

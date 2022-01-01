@@ -6,12 +6,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import {
-  ApiHeaders,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response, Request } from 'express';
 import { Page } from 'puppeteer';
 import { DatabaseService } from 'src/database/database.service';
@@ -21,7 +16,10 @@ import { GradesService } from './grades.service';
 @ApiTags('grades')
 @Controller(['grades', 'kardex'])
 export class GradesController {
-  constructor(private readonly gradesService: GradesService, private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly gradesService: GradesService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @ApiResponse({
     status: 200,

@@ -90,8 +90,7 @@ export class StudentController {
 
   @ApiResponse({
     status: 200,
-    description:
-      'If the credentials are valid and the login is successful',
+    description: 'If the credentials are valid and the login is successful',
   })
   @ApiResponse({
     status: 401,
@@ -118,7 +117,7 @@ export class StudentController {
   login() {
     // if the request made it this far, it means the user could login
     // because of the AutheMiddleware so just return
-    return
+    return;
   }
 
   parseStudentInfoQuery(query: string): string[] {

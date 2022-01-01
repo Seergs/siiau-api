@@ -3,6 +3,7 @@ import {
   Injectable,
   Logger,
   NestMiddleware,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { Page } from 'puppeteer';
@@ -23,7 +24,7 @@ export class AuthMiddleware implements NestMiddleware {
       constants.urls.homePage,
     );
     const isLoggedIn = await this.login(page, studentCode, studentNip);
-    if (!isLoggedIn) return 'Invalid credentials';
+    if (!isLoggedIn) throw new UnauthorizedException("Invalid credentials");
 
     res.locals.page = page;
     next();

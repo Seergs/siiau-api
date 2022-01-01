@@ -7,7 +7,6 @@ export class GradesService {
   private readonly logger = new Logger(GradesService.name);
 
   async getGrades(page: Page, calendars: string[]) {
-
     if (!calendars) {
       return this.getGradesForAllCalendars(page);
     }

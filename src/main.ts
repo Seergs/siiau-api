@@ -3,6 +3,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 import { config } from 'dotenv';
+import { StudentModule } from './student/student.module';
+import { GradesModule } from './grades/grades.module';
 config();
 
 async function bootstrap() {
@@ -13,11 +15,14 @@ async function bootstrap() {
     .setTitle('SIIAU API')
     .setDescription('Quickly consume data from the SIIAU system')
     .setVersion('1.0')
-    .addTag('student')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(app, config, {
+    include: [StudentModule, GradesModule],
+  });
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: { defaultModelsExpandDepth: -1 },
+  });
 
   await app.listen(process.env.PORT || 3000);
 }

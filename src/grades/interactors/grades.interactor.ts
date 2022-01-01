@@ -7,6 +7,7 @@ import { Frame, Page } from 'puppeteer';
 import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ExtraKardexData, Grade, KardexGrade } from '../entities/grade.entity';
+import { CalendarGrades } from '../entities/calendar-grades.entity';
 
 export class GradesInteractor {
   private static readonly logger = new Logger(GradesInteractor.name);
@@ -18,12 +19,12 @@ export class GradesInteractor {
 
   static async getStudentGradesForCalendars(calendars: string[], page: Page) {
     await this.navigateToRequestedPage(page, true);
-    let grades = {}
+    let grades: CalendarGrades[] = [];
     for (const calendar of calendars) {
       const gradesForCalendar = await this.getGradesForCalendar(calendar, page);
-      grades[calendar] = gradesForCalendar
+      grades.push(gradesForCalendar);
     }
-  return grades;
+    return grades;
   }
 
   static async getStudentGradesForAllCalendars(page: Page) {
@@ -189,11 +190,11 @@ export class GradesInteractor {
       page,
       'Contenido',
     );
-    let results = {};
+    let results: CalendarGrades[] = [];
     const calendars = await this.getAvailableCalendars(contentFrame);
     for (const calendar of calendars) {
       const result = await this.getGradesForCalendar(calendar, page);
-      results[calendar] = result;
+      results.push(result);
     }
     return results;
   }
@@ -251,7 +252,7 @@ export class GradesInteractor {
         grades.push(grade);
       }
     }
-    return grades;
+    return new CalendarGrades({ calendar, grades });
   }
 
   static async findRowOfCalendar(calendar: string, frame: Frame) {

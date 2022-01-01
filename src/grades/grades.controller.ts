@@ -5,14 +5,53 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import {
+  ApiHeaders,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response } from 'express';
 import { Page } from 'puppeteer';
+import { CalendarGrades } from './entities/calendar-grades.entity';
 import { GradesService } from './grades.service';
 
+@ApiTags('grades')
 @Controller(['grades', 'kardex'])
 export class GradesController {
   constructor(private readonly gradesService: GradesService) {}
 
+  @ApiResponse({
+    status: 200,
+    description:
+      'Retrieves the grades per subject of the student from some calendar if specifed. Alternatively you can use the kardex endpoint, will produce the same output',
+    type: [CalendarGrades],
+    schema: null,
+  })
+  @ApiHeaders([
+    {
+      name: 'x-student-code',
+      required: true,
+      description:
+        'The student ID (code) which is used to authenticate to the SIIAU system',
+      example: '217758497',
+    },
+    {
+      name: 'x-student-nip',
+      required: true,
+      description:
+        'The student password (nip) which is used to authenticate to the SIIAU system',
+      example: 'mypassword',
+    },
+  ])
+  @ApiQuery({
+    name: 'calendar',
+    type: String,
+    example: '18B,2019A,21-B',
+    description: 'A comma separated list of calendars to retrieve',
+    required: false,
+  })
   @Get()
   getGrades(
     @Query() query: Record<string, any>,
@@ -29,6 +68,9 @@ export class GradesController {
       // dont throw error, if no calendar specified, then return all calendars
       return;
     }
+
+    // If it is for the current calendar, then it's all good
+    if (receivedCalendars === 'current') return [receivedCalendars];
 
     let calendars: string[] = [];
     const calendarsUppercase = receivedCalendars.toUpperCase();

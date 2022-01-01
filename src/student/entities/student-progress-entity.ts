@@ -39,6 +39,16 @@ export class StudentProgress {
   percentage: string;
 }
 
+const studentProgressExample = new StudentProgress();
+studentProgressExample.calendar = '2017-B';
+studentProgressExample.admission = '2017-B';
+studentProgressExample.career = 'INCO';
+studentProgressExample.campus = 'CUCEI';
+studentProgressExample.campusAlt = 'CUCEI';
+studentProgressExample.gpa = '86';
+studentProgressExample.credits = '36';
+studentProgressExample.percentage = '9.60%';
+
 export class StudentProgressTotal {
   @ApiProperty({ example: '90.49' })
   gpa: string;
@@ -50,15 +60,20 @@ export class StudentProgressTotal {
   percentage: string;
 }
 
+const studentProgressTotalExample = new StudentProgressTotal();
+(studentProgressTotalExample.gpa = '90.49'),
+  (studentProgressTotalExample.credits = '384');
+studentProgressTotalExample.percentage = '102.4%';
+
 export class StudentProgressResponse {
   constructor(response: Partial<StudentProgressResponse>) {
     Object.assign(this, response);
   }
 
-  @ApiProperty({ example: [new StudentProgress()], isArray: true })
+  @ApiProperty({ example: [studentProgressExample] })
   semesters: StudentProgress[];
 
-  @ApiProperty({ example: new StudentProgressTotal() })
+  @ApiProperty({ example: studentProgressTotalExample })
   total: StudentProgressTotal;
 }
 

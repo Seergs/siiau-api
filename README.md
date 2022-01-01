@@ -1,4 +1,4 @@
-<p align="center">A RESTful API for quickly retrieve information from the SIIAU system</p>
+<p align="center">A RESTful API for quickly retrieving information from the SIIAU system</p>
 
 **We do not store student IDs nor passwords on our servers, this is a stateless API**
 

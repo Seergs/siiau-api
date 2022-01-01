@@ -16,9 +16,14 @@ export class GradesInteractor {
     return await this.getGradesForCurrentCalendar(page);
   }
 
-  static async getStudentGradesForCalendar(calendar: string, page: Page) {
+  static async getStudentGradesForCalendars(calendars: string[], page: Page) {
     await this.navigateToRequestedPage(page, true);
-    return await this.getGradesForCalendar(calendar, page);
+    let grades = {}
+    for (const calendar of calendars) {
+      const gradesForCalendar = await this.getGradesForCalendar(calendar, page);
+      grades[calendar] = gradesForCalendar
+    }
+  return grades;
   }
 
   static async getStudentGradesForAllCalendars(page: Page) {
@@ -184,11 +189,11 @@ export class GradesInteractor {
       page,
       'Contenido',
     );
-    let results = {}
+    let results = {};
     const calendars = await this.getAvailableCalendars(contentFrame);
     for (const calendar of calendars) {
-      const result = await this.getGradesForCalendar(calendar, page)
-      results[calendar] = result
+      const result = await this.getGradesForCalendar(calendar, page);
+      results[calendar] = result;
     }
     return results;
   }

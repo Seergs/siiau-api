@@ -1,8 +1,12 @@
-import {InternalServerErrorException, Logger} from "@nestjs/common";
-import {Frame, Page} from "puppeteer";
-import constants from "src/constants";
-import {PuppeteerService} from "src/puppeteer/puppeteer.service";
-import {StudentProgress, StudentProgressResponse, StudentProgressTotal} from "../entities/student-progress-entity";
+import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { Frame, Page } from 'puppeteer';
+import constants from 'src/constants';
+import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
+import {
+  StudentProgress,
+  StudentProgressResponse,
+  StudentProgressTotal,
+} from '../entities/student-progress-entity';
 
 export class StudentProgressInteractor {
   private static readonly logger = new Logger(StudentProgressInteractor.name);
@@ -12,7 +16,9 @@ export class StudentProgressInteractor {
     return await this.getAcademicProgressFromPage(page);
   }
 
-  private static async getAcademicProgressFromPage(page: Page): Promise<StudentProgressResponse> {
+  private static async getAcademicProgressFromPage(
+    page: Page,
+  ): Promise<StudentProgressResponse> {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
     const NUMBER_OF_COLUMNS = 8;
     const START_COLUMN = 1;
@@ -83,7 +89,10 @@ export class StudentProgressInteractor {
       await page.waitForTimeout(1000);
       await this.navigateToStudentInfoMenu(menuFrame);
 
-      const contentFrame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
+      const contentFrame = await PuppeteerService.getFrameFromPage(
+        page,
+        'Contenido',
+      );
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;
       while (!isStudentInfoPageLoaded && retryCounter < 5) {

@@ -21,7 +21,10 @@ export class StudentInfoInteractor {
       await page.waitForTimeout(1000);
       await this.navigateToStudentInfoMenu(menuFrame);
 
-      const contentFrame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
+      const contentFrame = await PuppeteerService.getFrameFromPage(
+        page,
+        'Contenido',
+      );
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;
       while (!isStudentInfoPageLoaded && retryCounter < 5) {

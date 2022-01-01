@@ -9,8 +9,14 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [StudentModule, PuppeteerModule, GradesModule, AuthModule, DatabaseModule],
+  imports: [
+    StudentModule,
+    PuppeteerModule,
+    GradesModule,
+    AuthModule,
+    DatabaseModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, PuppeteerService ],
+  providers: [AppService, PuppeteerService],
 })
 export class AppModule {}

@@ -32,7 +32,10 @@ export class AuthMiddleware implements NestMiddleware {
   async login(page: Page, studentCode: string, studentNip: string) {
     try {
       await page.waitForTimeout(2000);
-      const loginFrame = await PuppeteerService.getFrameFromPage(page, 'mainFrame');
+      const loginFrame = await PuppeteerService.getFrameFromPage(
+        page,
+        'mainFrame',
+      );
       await loginFrame.type(constants.selectors.login.code, studentCode);
       await loginFrame.type(constants.selectors.login.nip, studentNip);
       await loginFrame.click(constants.selectors.login.button);

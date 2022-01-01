@@ -23,12 +23,12 @@ export class KardexGrade {
   type: string;
   credits: number;
   date: string;
-  extra?: ExtraKardexData
+  extra?: ExtraKardexData;
 }
 
 export class ExtraKardexData {
-    grade: string;
-    type: string;
-    credits: string;
-    date: string;
+  grade: string;
+  type: string;
+  credits: string;
+  date: string;
 }

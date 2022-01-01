@@ -2,15 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class StudentInfo {
   constructor() {
-    this.code= '';
-    this.name = ''
-    this.campus = ''
-    this.career = ''
-    this.degree = ''
-    this.status = ''
-    this.location = ''
-    this.lastCalendar = ''
-    this.admissionDate = ''
+    this.code = '';
+    this.name = '';
+    this.campus = '';
+    this.career = '';
+    this.degree = '';
+    this.status = '';
+    this.location = '';
+    this.lastCalendar = '';
+    this.admissionDate = '';
   }
 
   @ApiProperty({ example: '217758497' })

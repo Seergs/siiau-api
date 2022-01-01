@@ -9,7 +9,7 @@ import { Response } from 'express';
 import { Page } from 'puppeteer';
 import { GradesService } from './grades.service';
 
-@Controller('grades')
+@Controller(['grades', 'kardex'])
 export class GradesController {
   constructor(private readonly gradesService: GradesService) {}
 
@@ -19,21 +19,29 @@ export class GradesController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const puppeteerPage = response.locals.page as Page;
-    const calendar = query['calendar'];
-    const parsedCalendar = this.parseCalendar(calendar);
-    return this.gradesService.getGrades(puppeteerPage, parsedCalendar);
+    const calendars = query['calendar'];
+    const parsedCalendars = this.parseCalendars(calendars);
+    return this.gradesService.getGrades(puppeteerPage, parsedCalendars);
   }
 
-  private parseCalendar(receivedCalendar: string) {
-    if (!receivedCalendar) {
+  private parseCalendars(receivedCalendars: string) {
+    if (!receivedCalendars) {
       // dont throw error, if no calendar specified, then return all calendars
-      return 
+      return;
     }
-    
 
+    let calendars: string[] = [];
+    const calendarsUppercase = receivedCalendars.toUpperCase();
+    const calendarsArray = calendarsUppercase.split(',');
+    for (const c of calendarsArray) {
+      calendars.push(this.parseCalendar(c));
+    }
+    return calendars;
+  }
+
+  private parseCalendar(calendar: string) {
     // possible values for semester: 17B, 17-B, 17 B, 2017B, 2017 B, 2017-B
     // return should look like '17 B'
-    const calendar = receivedCalendar.toUpperCase();
 
     // 17 B is already a parsed calendar
     if (/^\d{2} [a-zA-Z]$/.test(calendar)) {

@@ -3,13 +3,13 @@ import { ApiProperty } from '@nestjs/swagger';
 export class StudentProgress {
   constructor() {
     this.calendar = '';
-    this.admission = ''
-    this.career = ''
-    this.campus = ''
-    this.campusAlt = ''
-    this.gpa = ''
-    this.credits = ''
-    this.percentage = ''
+    this.admission = '';
+    this.career = '';
+    this.campus = '';
+    this.campusAlt = '';
+    this.gpa = '';
+    this.credits = '';
+    this.percentage = '';
   }
 
   @ApiProperty({ example: '2021-B' })
@@ -37,7 +37,6 @@ export class StudentProgress {
 
   @ApiProperty({ example: '3.20%' })
   percentage: string;
-
 }
 
 export class StudentProgressTotal {

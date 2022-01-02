@@ -12,6 +12,6 @@ import { DatabaseModule } from 'src/database/database.module';
 })
 export class GradesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('grades');
+    consumer.apply(AuthMiddleware).forRoutes('grades', 'kardex');
   }
 }

@@ -7,6 +7,9 @@ import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { GradesModule } from './grades/grades.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
+import { CreditsController } from './credits/credits.controller';
+import { CreditsService } from './credits/credits.service';
+import { CreditsModule } from './credits/credits.module';
 
 @Module({
   imports: [
@@ -15,8 +18,9 @@ import { DatabaseModule } from './database/database.module';
     GradesModule,
     AuthModule,
     DatabaseModule,
+    CreditsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PuppeteerService],
+  controllers: [AppController, CreditsController],
+  providers: [AppService, PuppeteerService, CreditsService],
 })
 export class AppModule {}

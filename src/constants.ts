@@ -77,5 +77,15 @@ export default {
         7: 'date',
       },
     },
+    credits: {
+      summary: {
+        required: '//*[@id="leyendaPromedio"]/table[2]/tbody/tr[2]/td[1]',
+        aquired: '//*[@id="leyendaPromedio"]/table[2]/tbody/tr[3]/td',
+        left: '//*[@id="creditosFaltantesID"]',
+      },
+      detailed: {
+        cell: '//*[@id="leyendaPromedio"]/table[2]/tbody/tr[{i}]/td[{j}]',
+      },
+    },
   },
 };

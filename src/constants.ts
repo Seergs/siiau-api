@@ -15,6 +15,7 @@ export default {
       studentInfo: "//a[contains(., 'Ficha')]",
       studentGrades: "//a[contains(., 'Boleta')]",
       studentKardex: "//a[contains(., 'Kárdex')]",
+      admissionLink: "//a[contains(., 'Ingreso')]"
     },
     studentInfo: {
       code: '/html/body/div[3]/table/tbody/tr[2]/td[1]',
@@ -87,5 +88,19 @@ export default {
         cell: '//*[@id="leyendaPromedio"]/table[2]/tbody/tr[{i}]/td[{j}]',
       },
     },
+    admission: {
+      validator: 'Escuela de procedencia',
+      cell: '/html/body/div[2]/div[2]/table/tbody/tr[{i}]/td[{j}]',
+      cells: {
+        1: 'calendar',
+        2: 'schoolOfOrigin',
+        3: 'admissionType',
+        4: 'gpaSchoolOfOrigin',
+        5: 'admissionTestScore',
+        6: 'admissionScore',
+        7: 'personalContribution',
+        8: 'career',
+      },
+    }
   },
 };

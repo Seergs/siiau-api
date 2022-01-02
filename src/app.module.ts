@@ -10,6 +10,7 @@ import { DatabaseModule } from './database/database.module';
 import { CreditsController } from './credits/credits.controller';
 import { CreditsService } from './credits/credits.service';
 import { CreditsModule } from './credits/credits.module';
+import { AdmissionModule } from './admission/admission.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CreditsModule } from './credits/credits.module';
     AuthModule,
     DatabaseModule,
     CreditsModule,
+    AdmissionModule,
   ],
   controllers: [AppController, CreditsController],
   providers: [AppService, PuppeteerService, CreditsService],

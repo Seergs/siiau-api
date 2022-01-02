@@ -15,3 +15,8 @@ Note: For every request you need to send headers `x-student-code` and `x-student
 - Credits information (required, aquired, left, split by type, etc)
 - Information about the admission (gpa from the school of origin, score of the admision test, etc)
 - Student schedule
+
+### Known issues
+
+- Sometimes there is an error when trying to find some element from the page, still trying to find the bug, just re-make the request for now
+- If the student has a survey to complete, then some operations like kardex (grades) will fail

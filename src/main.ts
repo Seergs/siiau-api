@@ -6,6 +6,7 @@ import { config } from 'dotenv';
 import { StudentModule } from './student/student.module';
 import { GradesModule } from './grades/grades.module';
 import { CreditsModule } from './credits/credits.module';
+import { AdmissionModule } from './admission/admission.module';
 config();
 
 async function bootstrap() {
@@ -19,7 +20,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-    include: [StudentModule, GradesModule, CreditsModule],
+    include: [StudentModule, GradesModule, CreditsModule,  AdmissionModule],
   });
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },

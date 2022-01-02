@@ -25,7 +25,13 @@ export class CreditsInteractor {
     credits.aquired = aquired;
     credits.left = left;
 
-    const {mandatorySpecialized, selectiveSpecialized, elective, basicCommon, basicParticular} = await this.getDetailedCredits(contentFrame);
+    const {
+      mandatorySpecialized,
+      selectiveSpecialized,
+      elective,
+      basicCommon,
+      basicParticular,
+    } = await this.getDetailedCredits(contentFrame);
     credits.mandatorySpecializedSubject = mandatorySpecialized;
     credits.selectiveSpecializedSubject = selectiveSpecialized;
     credits.electiveSubject = elective;

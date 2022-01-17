@@ -1,11 +1,11 @@
-import { InternalServerErrorException, Logger } from "@nestjs/common";
-import { Frame, Page } from "puppeteer";
-import constants from "../../constants";
-import { PuppeteerService } from "../../puppeteer/puppeteer.service";
-import { Admission } from "../entities/admission.entity";
+import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { Frame, Page } from 'puppeteer';
+import constants from '../../constants';
+import { PuppeteerService } from '../../puppeteer/puppeteer.service';
+import { Admission } from '../entities/admission.entity';
 
 export class AdmissionInteractor {
-  private static readonly logger = new Logger(AdmissionInteractor.name)
+  private static readonly logger = new Logger(AdmissionInteractor.name);
   static async getAdmissionInformation(page: Page) {
     await this.navigateToRequestedPage(page);
     return await this.getAdmissionInformationFromPage(page);
@@ -83,7 +83,7 @@ export class AdmissionInteractor {
   static async getAdmissionInformationFromPage(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
-    const admissions: Admission[] = []
+    const admissions: Admission[] = [];
 
     const NUMBER_OF_COLUMNS = 8;
     const START_COLUMN = 1;
@@ -107,7 +107,7 @@ export class AdmissionInteractor {
 
           const text = await cell.evaluate((c) => c.textContent.trim());
           const responseKey = constants.selectors.admission.cells[j];
-	  admissionInfo[responseKey] = text;
+          admissionInfo[responseKey] = text;
         } catch (e) {
           thereAreMoreRows = false;
           break;

@@ -6,7 +6,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { CreditsService } from './credits.service';
 import { RootResponse, RootHeaders } from './swagger';
 
-@ApiTags("credits")
+@ApiTags('credits')
 @Controller('credits')
 export class CreditsController {
   constructor(

@@ -11,6 +11,7 @@ import { CreditsController } from './credits/credits.controller';
 import { CreditsService } from './credits/credits.service';
 import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AdmissionModule } from './admission/admission.module';
     DatabaseModule,
     CreditsModule,
     AdmissionModule,
+    ScheduleModule,
   ],
   controllers: [AppController, CreditsController],
   providers: [AppService, PuppeteerService, CreditsService],

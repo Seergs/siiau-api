@@ -5,7 +5,7 @@ import { Page } from 'puppeteer';
 import { AdmissionService } from './admission.service';
 import { RootResponse, RootHeaders } from './swagger';
 
-@ApiTags("admission")
+@ApiTags('admission')
 @Controller('admission')
 export class AdmissionController {
   constructor(private readonly admissionService: AdmissionService) {}
@@ -14,7 +14,7 @@ export class AdmissionController {
   @ApiHeaders(RootHeaders)
   @Get()
   getAdmissionInfo(@Res({ passthrough: true }) res: Response) {
-    const page = res.locals.page as Page
+    const page = res.locals.page as Page;
     return this.admissionService.getAdmissionInformation(page);
   }
 }

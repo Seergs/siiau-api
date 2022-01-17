@@ -1,17 +1,17 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AdmissionService } from './admission.service';
-import { AdmissionController } from './admission.controller';
 import { AuthMiddleware } from 'src/auth/auth.middleware';
 import { DatabaseModule } from 'src/database/database.module';
 import { PuppeteerModule } from 'src/puppeteer/puppeteer.module';
+import { ScheduleController } from './schedule.controller';
+import { ScheduleService } from './schedule.service';
 
 @Module({
-  controllers: [AdmissionController],
-  providers: [AdmissionService],
+  controllers: [ScheduleController],
   imports: [DatabaseModule, PuppeteerModule],
+  providers: [ScheduleService],
 })
-export class AdmissionModule implements NestModule {
+export class ScheduleModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('admission');
+    consumer.apply(AuthMiddleware).forRoutes('schedule');
   }
 }

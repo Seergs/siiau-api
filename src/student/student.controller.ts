@@ -1,11 +1,20 @@
 import { Controller, Get, Query, Req, Res, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import {  studentInfoKeys } from './entities/student-info-entity';
+import { studentInfoKeys } from './entities/student-info-entity';
 import { StudentService } from './student.service';
 import { Page } from 'puppeteer';
 import { DatabaseService } from '../database/database.service';
-import { RootResponse, RootHeaders, RootQuery, ProgressResponse, ProgressHeaders, LoginResponseOk, LoginResponseError, LoginHeaders } from './swagger';
+import {
+  RootResponse,
+  RootHeaders,
+  RootQuery,
+  ProgressResponse,
+  ProgressHeaders,
+  LoginResponseOk,
+  LoginResponseError,
+  LoginHeaders,
+} from './swagger';
 
 @ApiTags('student')
 @Controller('student')
@@ -18,7 +27,7 @@ export class StudentController {
   @Get()
   @ApiResponse(RootResponse)
   @ApiHeaders(RootHeaders)
-  @ApiQuery(RootQuery )
+  @ApiQuery(RootQuery)
   async getStudent(
     @Query() query: Record<string, any>,
     @Res({ passthrough: true }) response: Response,
@@ -32,7 +41,7 @@ export class StudentController {
 
   @Get('/progress')
   @ApiResponse(ProgressResponse)
-  @ApiHeaders(ProgressHeaders )
+  @ApiHeaders(ProgressHeaders)
   async getAcademicProgress(
     @Res({ passthrough: true }) response: Response,
     @Req() request: Request,
@@ -43,8 +52,8 @@ export class StudentController {
   }
 
   @ApiResponse(LoginResponseOk)
-  @ApiResponse(LoginResponseError )
-  @ApiHeaders(LoginHeaders )
+  @ApiResponse(LoginResponseError)
+  @ApiHeaders(LoginHeaders)
   @Get('/login')
   login() {
     // if the request made it this far, it means the user could login

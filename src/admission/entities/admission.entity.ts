@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class Admission {
   @ApiProperty({ example: '2017-B' })
@@ -25,4 +25,3 @@ export class Admission {
   @ApiProperty({ example: 'INGENIERIA EN COMPUTACION' })
   career: string;
 }
-

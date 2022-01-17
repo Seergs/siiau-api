@@ -15,7 +15,10 @@ export default {
       studentInfo: "//a[contains(., 'Ficha')]",
       studentGrades: "//a[contains(., 'Boleta')]",
       studentKardex: "//a[contains(., 'Kárdex')]",
-      admissionLink: "//a[contains(., 'Ingreso')]"
+      admissionLink: "//a[contains(., 'Ingreso')]",
+      registerLink:
+        "//a[contains(., 'REGISTRO') and not(contains(., 'PRERREGISTRO'))]",
+      scheduleLink: "//a[contains(., 'Horario')]",
     },
     studentInfo: {
       code: '/html/body/div[3]/table/tbody/tr[2]/td[1]',
@@ -101,6 +104,33 @@ export default {
         7: 'personalContribution',
         8: 'career',
       },
-    }
+    },
+    studentSchedule: {
+      validator: 'PROFESOR',
+      select: '#cicloID',
+      lastCalendar: '//*[@id="cicloID"]/option[2]',
+      cell: '/html/body/center[2]/div[2]/table/tbody/tr[{i}]/td[{j}]',
+      cells: {
+        1: 'nrc',
+        2: 'subjectId',
+        3: 'subject',
+        4: 'section',
+        5: 'credits',
+        6: 'timePeriod',
+        13: 'building',
+        14: 'classroom',
+        15: 'teacher',
+        16: 'dateOfStart',
+        17: 'dateOfEnd',
+      },
+      cellsExtra: {
+        2: 'timePeriod',
+        9: 'building',
+        10: 'classroom',
+        11: 'teacher',
+        12: 'dateOfStart',
+        13: 'dateOfEnd',
+      },
+    },
   },
 };

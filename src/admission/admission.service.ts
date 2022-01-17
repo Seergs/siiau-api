@@ -4,12 +4,10 @@ import { AdmissionInteractor } from './interactors/admission.interactor';
 
 @Injectable()
 export class AdmissionService {
-private readonly logger = new Logger(AdmissionService.name)
+  private readonly logger = new Logger(AdmissionService.name);
   async getAdmissionInformation(page: Page) {
     try {
-      const admission = await AdmissionInteractor.getAdmissionInformation(
-        page,
-      );
+      const admission = await AdmissionInteractor.getAdmissionInformation(page);
       await page.close();
       return admission;
     } catch (e) {

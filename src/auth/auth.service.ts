@@ -2,35 +2,26 @@ import {
   BadRequestException,
   Injectable,
   Logger,
-  NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
 import { Page } from 'puppeteer';
+import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
-import constants from '../constants';
 
 @Injectable()
-export class AuthMiddleware implements NestMiddleware {
-  private readonly logger = new Logger(AuthMiddleware.name);
+export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(private readonly puppeteerService: PuppeteerService) {}
-  async use(req: Request, res: Response, next: NextFunction) {
-    const studentCode = req.headers['x-student-code'] as string;
-    const studentNip = req.headers['x-student-nip'] as string;
+  async login(studentCode: string, studentNip: string): Promise<Page> {
     if (!studentCode || !studentNip)
-      throw new BadRequestException('Missing headers');
+      throw new BadRequestException('Missing auth headers');
+
+    if (studentNip.length > 10) throw new BadRequestException("Nip cannot be longer than 10 characters")
 
     const page = await this.puppeteerService.setUpInitialPage(
       constants.urls.homePage,
     );
-    const isLoggedIn = await this.login(page, studentCode, studentNip);
-    if (!isLoggedIn) throw new UnauthorizedException('Invalid credentials');
 
-    res.locals.page = page;
-    next();
-  }
-
-  async login(page: Page, studentCode: string, studentNip: string) {
     try {
       await page.waitForTimeout(2000);
       const loginFrame = await PuppeteerService.getFrameFromPage(
@@ -45,12 +36,18 @@ export class AuthMiddleware implements NestMiddleware {
         page,
         'Contenido',
       );
-      return (await homePageFrame.content()).includes(
-        constants.selectors.home.validator,
-      );
+      if (
+        (await homePageFrame.content()).includes(
+          constants.selectors.home.validator,
+        )
+      ) {
+        return page;
+      } else {
+        throw new UnauthorizedException('Invalid credentials');
+      }
     } catch (e) {
       this.logger.error(e);
-      return false;
+      throw new UnauthorizedException('Invalid credentials');
     }
   }
 }

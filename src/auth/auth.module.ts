@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { PuppeteerModule } from 'src/puppeteer/puppeteer.module';
-import { AuthMiddleware } from './auth.middleware';
+import { AuthService } from './auth.service';
 
 @Module({
-  providers: [AuthMiddleware],
+  providers: [AuthService],
   imports: [PuppeteerModule],
+  exports: [AuthService]
 })
 export class AuthModule {}

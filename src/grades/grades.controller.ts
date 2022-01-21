@@ -4,11 +4,10 @@ import {
   Get,
   Query,
   Req,
-  Res,
 } from '@nestjs/common';
 import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Response, Request } from 'express';
-import { Page } from 'puppeteer';
+import { Request } from 'express';
+import { AuthService } from 'src/auth/auth.service';
 import { DatabaseService } from 'src/database/database.service';
 import { GradesService } from './grades.service';
 import { RootResponse, RootHeaders, RootQuery } from './swagger';
@@ -19,6 +18,7 @@ export class GradesController {
   constructor(
     private readonly gradesService: GradesService,
     private readonly databaseService: DatabaseService,
+    private readonly authService: AuthService
   ) {}
 
   @ApiResponse(RootResponse)
@@ -27,14 +27,15 @@ export class GradesController {
   @Get()
   async getGrades(
     @Query() query: Record<string, any>,
-    @Res({ passthrough: true }) response: Response,
     @Req() request: Request,
   ) {
-    const puppeteerPage = response.locals.page as Page;
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
+    const page = await this.authService.login(studentCode, studentNip);
     this.databaseService.save('grades', request.url);
     const calendars = query['calendar'];
     const parsedCalendars = this.parseCalendars(calendars);
-    return this.gradesService.getGrades(puppeteerPage, parsedCalendars);
+    return this.gradesService.getGrades(page, parsedCalendars);
   }
 
   private parseCalendars(receivedCalendars: string) {

@@ -1,17 +1,16 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import {
   BadRequestException,
   Controller,
   Get,
   Query,
   Req,
-  Res,
 } from '@nestjs/common';
-import { Page } from 'puppeteer';
 import { DatabaseService } from 'src/database/database.service';
 import { ScheduleService } from './schedule.service';
 import { RootResponse, RootHeaders, RootQuery } from './swagger';
 import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthService } from 'src/auth/auth.service';
 
 @ApiTags('schedule')
 @Controller('schedule')
@@ -19,6 +18,7 @@ export class ScheduleController {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly scheduleService: ScheduleService,
+    private readonly authService: AuthService
   ) {}
 
   @ApiResponse(RootResponse)
@@ -27,15 +27,15 @@ export class ScheduleController {
   @Get()
   async getSchedule(
     @Query() query: Record<string, any>,
-    @Res({ passthrough: true }) response: Response,
     @Req() request: Request,
   ) {
-    const puppeteerPage = response.locals.page as Page;
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
+    const page = await this.authService.login(studentCode, studentNip);
     this.databaseService.save('schedule', request.url);
     const calendar = query['calendar'];
     const parsedCalendar = this.parseCalendar(calendar);
-    console.log(parsedCalendar)
-    return this.scheduleService.getSchedule(puppeteerPage, parsedCalendar);
+    return this.scheduleService.getSchedule(page, parsedCalendar);
   }
 
   private parseCalendar(receivedCalendar: string) {

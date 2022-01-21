@@ -20,7 +20,6 @@ export class PuppeteerService {
       // headless: process.env.NODE_ENV === 'production',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
-    console.log('Browser instance setup!');
   }
 
   async setUpInitialPage(url: string) {

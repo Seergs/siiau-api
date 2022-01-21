@@ -1,17 +1,13 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { StudentController } from './student.controller';
 import { PuppeteerModule } from 'src/puppeteer/puppeteer.module';
-import { AuthMiddleware } from 'src/auth/auth.middleware';
 import { DatabaseModule } from 'src/database/database.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   controllers: [StudentController],
   providers: [StudentService],
-  imports: [PuppeteerModule, DatabaseModule],
+  imports: [PuppeteerModule, DatabaseModule, AuthModule],
 })
-export class StudentModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('student');
-  }
-}
+export class StudentModule {}

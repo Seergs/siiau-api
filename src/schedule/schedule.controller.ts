@@ -10,7 +10,10 @@ import {
 import { Page } from 'puppeteer';
 import { DatabaseService } from 'src/database/database.service';
 import { ScheduleService } from './schedule.service';
+import { RootResponse, RootHeaders, RootQuery } from './swagger';
+import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('schedule')
 @Controller('schedule')
 export class ScheduleController {
   constructor(
@@ -18,11 +21,14 @@ export class ScheduleController {
     private readonly scheduleService: ScheduleService,
   ) {}
 
+  @ApiResponse(RootResponse)
+  @ApiHeaders(RootHeaders)
+  @ApiQuery(RootQuery)
   @Get()
   async getSchedule(
     @Query() query: Record<string, any>,
     @Res({ passthrough: true }) response: Response,
-    request: Request,
+    @Req() request: Request,
   ) {
     const puppeteerPage = response.locals.page as Page;
     this.databaseService.save('schedule', request.url);

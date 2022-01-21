@@ -20,3 +20,4 @@ Note: For every request you need to send headers `x-student-code` and `x-student
 
 - Sometimes there is an error when trying to find some element from the page, still trying to find the bug, just re-make the request for now
 - If the student has a survey to complete, then some operations like kardex (grades) will fail
+- Requests take too long, since we are doing scrapping to get the data

@@ -22,7 +22,7 @@ export class ScheduleController {
   async getSchedule(
     @Query() query: Record<string, any>,
     @Res({ passthrough: true }) response: Response,
-    quest: Request,
+    request: Request,
   ) {
     const puppeteerPage = response.locals.page as Page;
     this.databaseService.save('schedule', request.url);

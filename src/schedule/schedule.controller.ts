@@ -22,10 +22,10 @@ export class ScheduleController {
   async getSchedule(
     @Query() query: Record<string, any>,
     @Res({ passthrough: true }) response: Response,
-    @Req() request: Request,
+    quest: Request,
   ) {
     const puppeteerPage = response.locals.page as Page;
-    // await this.databaseService.save('schedule', request.url);
+    this.databaseService.save('schedule', request.url);
     const calendar = query['calendar'];
     const parsedCalendar = this.parseCalendar(calendar);
     console.log(parsedCalendar)

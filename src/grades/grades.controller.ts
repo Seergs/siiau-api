@@ -31,7 +31,7 @@ export class GradesController {
     @Req() request: Request,
   ) {
     const puppeteerPage = response.locals.page as Page;
-    await this.databaseService.save('grades', request.url);
+    this.databaseService.save('grades', request.url);
     const calendars = query['calendar'];
     const parsedCalendars = this.parseCalendars(calendars);
     return this.gradesService.getGrades(puppeteerPage, parsedCalendars);

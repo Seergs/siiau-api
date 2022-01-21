@@ -22,7 +22,7 @@ export class CreditsController {
     @Req() request: Request,
   ) {
     const puppeteerPage = response.locals.page as Page;
-    await this.databaseService.save('credits', request.url);
+    this.databaseService.save('credits', request.url);
     return this.creditsService.getCredits(puppeteerPage);
   }
 }

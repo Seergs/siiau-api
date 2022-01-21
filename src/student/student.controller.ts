@@ -35,7 +35,7 @@ export class StudentController {
   ) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
     const puppeteerPage = response.locals.page as Page;
-    await this.databaseService.save('student', request.url);
+    this.databaseService.save('student', request.url);
     return await this.studentService.getStudent(puppeteerPage, paramsRequested);
   }
 
@@ -47,7 +47,7 @@ export class StudentController {
     @Req() request: Request,
   ) {
     const puppeteerPage = response.locals.page as Page;
-    await this.databaseService.save('student', request.url);
+    this.databaseService.save('student', request.url);
     return this.studentService.getAcademicProgress(puppeteerPage);
   }
 
@@ -57,7 +57,7 @@ export class StudentController {
   @Get('/login')
   login() {
     // if the request made it this far, it means the user could login
-    // because of the AutheMiddleware so just return
+    // because of the AuthMiddleware so just return
     return;
   }
 

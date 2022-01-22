@@ -1,11 +1,22 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Page } from 'puppeteer';
+import { AuthService } from 'src/auth/auth.service';
+import { DatabaseService } from 'src/database/database.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
 
 @Injectable()
 export class AdmissionService {
   private readonly logger = new Logger(AdmissionService.name);
-  async getAdmissionInformation(page: Page) {
+  constructor(
+    private readonly dbService: DatabaseService,
+    private readonly authService: AuthService,
+  ) {}
+  async getAdmissionInformation(
+    studentCode: string,
+    studentNip: string,
+    url: string
+  ) {
+    const page = await this.authService.login(studentCode, studentNip);
+    this.dbService.save('admission', url);
     try {
       const admission = await AdmissionInteractor.getAdmissionInformation(page);
       await page.close();

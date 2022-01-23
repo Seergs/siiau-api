@@ -13,9 +13,7 @@ import { RootResponse, RootHeaders, RootQuery } from './swagger';
 @ApiTags('grades')
 @Controller(['grades', 'kardex'])
 export class GradesController {
-  constructor(
-    private readonly gradesService: GradesService,
-  ) {}
+  constructor(private readonly gradesService: GradesService) {}
 
   @ApiResponse(RootResponse)
   @ApiHeaders(RootHeaders)
@@ -29,7 +27,12 @@ export class GradesController {
     const studentNip = request.headers['x-student-nip'] as string;
     const calendars = query['calendar'];
     const parsedCalendars = this.parseCalendars(calendars);
-    return this.gradesService.getGrades(studentCode, studentNip, request.url, parsedCalendars);
+    return this.gradesService.getGrades(
+      studentCode,
+      studentNip,
+      request.url,
+      parsedCalendars,
+    );
   }
 
   private parseCalendars(receivedCalendars: string) {

@@ -98,12 +98,12 @@ export class ScheduleInteractor {
   // calendarValue should be something like 202120 (2021B) to match the <option> value
   private static async switchCalendar(calendarValue: string, frame: Frame) {
     try {
-    await frame.select(
-      constants.selectors.studentSchedule.select,
-      calendarValue,
-    );
-    } catch(e) {
-      throw new BadRequestException("No calendar found " + calendarValue)
+      await frame.select(
+        constants.selectors.studentSchedule.select,
+        calendarValue,
+      );
+    } catch (e) {
+      throw new BadRequestException('No calendar found ' + calendarValue);
     }
   }
 

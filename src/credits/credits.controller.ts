@@ -7,16 +7,12 @@ import { RootResponse, RootHeaders } from './swagger';
 @ApiTags('credits')
 @Controller('credits')
 export class CreditsController {
-  constructor(
-    private readonly creditsService: CreditsService,
-  ) {}
+  constructor(private readonly creditsService: CreditsService) {}
 
   @ApiResponse(RootResponse)
   @ApiHeaders(RootHeaders)
   @Get()
-  async getCredits(
-    @Req() request: Request,
-  ) {
+  async getCredits(@Req() request: Request) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     return this.creditsService.getCredits(studentCode, studentNip, request.url);

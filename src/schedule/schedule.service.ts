@@ -9,12 +9,23 @@ import { ScheduleInteractor } from './interactors/schedule.interactor';
 export class ScheduleService {
   private readonly logger = new Logger(ScheduleService.name);
 
-  constructor(private readonly authService: AuthService, private readonly analyticsService: AnalyticsService, private readonly discordService: DiscordService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly analyticsService: AnalyticsService,
+    private readonly discordService: DiscordService,
+  ) {}
 
-  async getSchedule(studentCode: string, studentNip: string, url: string, calendar: string) {
+  async getSchedule(
+    studentCode: string,
+    studentNip: string,
+    url: string,
+    calendar: string,
+  ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('schedule', url);
-    this.discordService.sendMessage("Hey! a request was made to " + this.getSchedule.name)
+    this.discordService.sendMessage(
+      'Hey! a request was made to ' + this.getSchedule.name,
+    );
     if (!calendar) {
       return this.getCurrentSchedule(page);
     }

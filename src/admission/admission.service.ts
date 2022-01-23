@@ -8,9 +8,9 @@ import { DiscordService } from 'src/discord/discord.service';
 export class AdmissionService {
   private readonly logger = new Logger(AdmissionService.name);
   constructor(
-  private readonly analyticsService: AnalyticsService,
+    private readonly analyticsService: AnalyticsService,
     private readonly authService: AuthService,
-    private readonly discordService: DiscordService
+    private readonly discordService: DiscordService,
   ) {}
   async getAdmissionInformation(
     studentCode: string,
@@ -19,7 +19,9 @@ export class AdmissionService {
   ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('admission', url);
-    this.discordService.sendMessage("Hey! a request was made to " + this.getAdmissionInformation.name)
+    this.discordService.sendMessage(
+      'Hey! a request was made to ' + this.getAdmissionInformation.name,
+    );
     try {
       const admission = await AdmissionInteractor.getAdmissionInformation(page);
       await page.close();

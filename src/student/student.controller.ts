@@ -17,9 +17,7 @@ import {
 @ApiTags('student')
 @Controller('student')
 export class StudentController {
-  constructor(
-    private readonly studentService: StudentService,
-  ) {}
+  constructor(private readonly studentService: StudentService) {}
 
   @Get()
   @ApiResponse(RootResponse)
@@ -32,7 +30,12 @@ export class StudentController {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    return await this.studentService.getStudent(studentCode, studentNip, request.url, paramsRequested);
+    return await this.studentService.getStudent(
+      studentCode,
+      studentNip,
+      request.url,
+      paramsRequested,
+    );
   }
 
   @Get('/progress')
@@ -41,7 +44,11 @@ export class StudentController {
   async getAcademicProgress(@Req() request: Request) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
-    return this.studentService.getAcademicProgress(studentCode, studentNip, request.url);
+    return this.studentService.getAcademicProgress(
+      studentCode,
+      studentNip,
+      request.url,
+    );
   }
 
   @ApiResponse(LoginResponseOk)

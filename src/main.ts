@@ -21,7 +21,13 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-    include: [StudentModule, GradesModule, CreditsModule, AdmissionModule, ScheduleModule],
+    include: [
+      StudentModule,
+      GradesModule,
+      CreditsModule,
+      AdmissionModule,
+      ScheduleModule,
+    ],
   });
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },

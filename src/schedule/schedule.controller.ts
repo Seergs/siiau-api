@@ -13,9 +13,7 @@ import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 @ApiTags('schedule')
 @Controller('schedule')
 export class ScheduleController {
-  constructor(
-    private readonly scheduleService: ScheduleService,
-  ) {}
+  constructor(private readonly scheduleService: ScheduleService) {}
 
   @ApiResponse(RootResponse)
   @ApiHeaders(RootHeaders)
@@ -29,7 +27,12 @@ export class ScheduleController {
     const studentNip = request.headers['x-student-nip'] as string;
     const calendar = query['calendar'];
     const parsedCalendar = this.parseCalendar(calendar);
-    return this.scheduleService.getSchedule(studentCode, studentNip, request.url, parsedCalendar);
+    return this.scheduleService.getSchedule(
+      studentCode,
+      studentNip,
+      request.url,
+      parsedCalendar,
+    );
   }
 
   private parseCalendar(receivedCalendar: string) {
@@ -42,7 +45,9 @@ export class ScheduleController {
     // possible values for semester: 17B, 17-B, 17 B, 2017B, 2017 B, 2017-B
     // return should look like '201720'
 
-    const AorB = this.parseAandB(calendarUppercase[calendarUppercase.length - 1]);
+    const AorB = this.parseAandB(
+      calendarUppercase[calendarUppercase.length - 1],
+    );
 
     // 17 B, 17B, 17-B validation and parsing
     if (

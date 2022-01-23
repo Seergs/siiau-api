@@ -62,33 +62,33 @@ describe.only('AuthService', () => {
     expect(loginSpy).toHaveBeenCalledWith(studentCode, studentNip);
   });
 
-  it("should fail if no studentCode or studentNip", async () => {
+  it('should fail if no studentCode or studentNip', async () => {
     let studentCode: string;
     let studentNip: string;
     try {
       await authService.login(studentCode, studentNip);
-      expect(true).toBe(false)
-    } catch(e) {
-      expect(e.message).toBe("Missing auth headers")
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e.message).toBe('Missing auth headers');
     }
 
     studentCode = '';
     studentNip = '';
     try {
       await authService.login(studentCode, studentNip);
-      expect(true).toBe(false)
-    } catch(e) {
-      expect(e.message).toBe("Missing auth headers")
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e.message).toBe('Missing auth headers');
     }
-  })
+  });
 
-  it("should fail studentNip longer that 10 chars", async () => {
+  it('should fail studentNip longer that 10 chars', async () => {
     const studentNip = 'verylongprotectedpassword';
     try {
       await authService.login('studentCode', studentNip);
-      expect(true).toBe(false)
-    } catch(e) {
-      expect(e.message).toBe("Nip cannot be longer than 10 characters")
+      expect(true).toBe(false);
+    } catch (e) {
+      expect(e.message).toBe('Nip cannot be longer than 10 characters');
     }
-  })
+  });
 });

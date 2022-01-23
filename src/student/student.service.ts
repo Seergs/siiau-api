@@ -9,12 +9,23 @@ import { DiscordService } from 'src/discord/discord.service';
 export class StudentService {
   private readonly logger = new Logger(StudentService.name);
 
-  constructor(private readonly authService: AuthService, private readonly analyticsService: AnalyticsService, private readonly discordService: DiscordService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly analyticsService: AnalyticsService,
+    private readonly discordService: DiscordService,
+  ) {}
 
-  async getStudent(studentCode: string, studentNip: string, url: string, paramsRequested: string[]) {
+  async getStudent(
+    studentCode: string,
+    studentNip: string,
+    url: string,
+    paramsRequested: string[],
+  ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('student', url);
-    this.discordService.sendMessage("Hey! a request was made to " + this.getStudent.name)
+    this.discordService.sendMessage(
+      'Hey! a request was made to ' + this.getStudent.name,
+    );
     try {
       const studentInfo = await StudentInfoInteractor.getStudentInfo(
         page,
@@ -29,10 +40,16 @@ export class StudentService {
     }
   }
 
-  async getAcademicProgress(studentCode: string, studentNip: string, url: string) {
+  async getAcademicProgress(
+    studentCode: string,
+    studentNip: string,
+    url: string,
+  ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('student', url);
-    this.discordService.sendMessage("Hey! a request was made to " + this.getAcademicProgress.name)
+    this.discordService.sendMessage(
+      'Hey! a request was made to ' + this.getAcademicProgress.name,
+    );
     try {
       const studentProgress =
         await StudentProgressInteractor.getAcademicProgress(page);

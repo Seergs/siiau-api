@@ -27,13 +27,18 @@ import { DiscordModule } from './discord/discord.module';
     ScheduleModule,
     DiscordModule,
     CacheModule.register({
-      ttl: 60*10,
+      ttl: 60 * 10,
     }),
   ],
   controllers: [AppController, CreditsController],
-  providers: [AppService, PuppeteerService, CreditsService, {
-    provide: APP_INTERCEPTOR,
-    useClass: CacheInterceptor
-  }],
+  providers: [
+    AppService,
+    PuppeteerService,
+    CreditsService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule {}

@@ -9,9 +9,18 @@ import { GradesInteractor } from './interactors/grades.interactor';
 export class GradesService {
   private readonly logger = new Logger(GradesService.name);
 
-  constructor(private readonly authService: AuthService, private readonly analyticsService: AnalyticsService, private readonly discordService: DiscordService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly analyticsService: AnalyticsService,
+    private readonly discordService: DiscordService,
+  ) {}
 
-  async getGrades(studentCode: string, studentNip: string, url: string, calendars: string[]) {
+  async getGrades(
+    studentCode: string,
+    studentNip: string,
+    url: string,
+    calendars: string[],
+  ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('grades', url);
     this.discordService.sendMessage(

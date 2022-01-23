@@ -5,6 +5,6 @@ import { AuthService } from './auth.service';
 @Module({
   providers: [AuthService],
   imports: [PuppeteerModule],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}

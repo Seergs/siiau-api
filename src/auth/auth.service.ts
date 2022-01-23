@@ -16,7 +16,8 @@ export class AuthService {
     if (!studentCode || !studentNip)
       throw new BadRequestException('Missing auth headers');
 
-    if (studentNip.length > 10) throw new BadRequestException("Nip cannot be longer than 10 characters")
+    if (studentNip.length > 10)
+      throw new BadRequestException('Nip cannot be longer than 10 characters');
 
     const page = await this.puppeteerService.setUpInitialPage(
       constants.urls.homePage,

@@ -1,11 +1,20 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Page } from 'puppeteer';
+import { AnalyticsService } from 'src/analytics/analytics.service';
+import { AuthService } from 'src/auth/auth.service';
+import { DiscordService } from 'src/discord/discord.service';
 import { ScheduleInteractor } from './interactors/schedule.interactor';
 
 @Injectable()
 export class ScheduleService {
   private readonly logger = new Logger(ScheduleService.name);
-  async getSchedule(page: Page, calendar: string) {
+
+  constructor(private readonly authService: AuthService, private readonly analyticsService: AnalyticsService, private readonly discordService: DiscordService) {}
+
+  async getSchedule(studentCode: string, studentNip: string, url: string, calendar: string) {
+    const page = await this.authService.login(studentCode, studentNip);
+    this.analyticsService.save('schedule', url);
+    this.discordService.sendMessage("Hey! a request was made to " + this.getSchedule.name)
     if (!calendar) {
       return this.getCurrentSchedule(page);
     }

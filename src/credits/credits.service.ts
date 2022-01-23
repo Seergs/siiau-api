@@ -1,12 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Page } from 'puppeteer';
+import { AnalyticsService } from 'src/analytics/analytics.service';
+import { AuthService } from 'src/auth/auth.service';
+import { DiscordService } from 'src/discord/discord.service';
 import { CreditsInteractor } from './interactors/credits.interactor';
 
 @Injectable()
 export class CreditsService {
   private readonly logger = new Logger(CreditsService.name);
 
-  async getCredits(page: Page) {
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly authService: AuthService,
+    private readonly discordService: DiscordService,
+  ) {}
+
+  async getCredits(studentCode: string, studentNip: string, url: string) {
+    const page = await this.authService.login(studentCode, studentNip);
+    this.analyticsService.save('credits', url);
+    this.discordService.sendMessage(
+      'Hey! a request was made to ' + this.getCredits.name,
+    );
     try {
       const credits = await CreditsInteractor.getCredits(page);
       await page.close();

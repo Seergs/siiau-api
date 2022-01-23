@@ -7,8 +7,6 @@ import {
 } from '@nestjs/common';
 import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { AuthService } from 'src/auth/auth.service';
-import { AnalyticsService } from 'src/analytics/analytics.service';
 import { GradesService } from './grades.service';
 import { RootResponse, RootHeaders, RootQuery } from './swagger';
 
@@ -17,8 +15,6 @@ import { RootResponse, RootHeaders, RootQuery } from './swagger';
 export class GradesController {
   constructor(
     private readonly gradesService: GradesService,
-    private readonly databaseService: AnalyticsService,
-    private readonly authService: AuthService
   ) {}
 
   @ApiResponse(RootResponse)
@@ -31,11 +27,9 @@ export class GradesController {
   ) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
-    const page = await this.authService.login(studentCode, studentNip);
-    this.databaseService.save('grades', request.url);
     const calendars = query['calendar'];
     const parsedCalendars = this.parseCalendars(calendars);
-    return this.gradesService.getGrades(page, parsedCalendars);
+    return this.gradesService.getGrades(studentCode, studentNip, request.url, parsedCalendars);
   }
 
   private parseCalendars(receivedCalendars: string) {

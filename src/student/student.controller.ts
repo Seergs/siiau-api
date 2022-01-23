@@ -3,7 +3,6 @@ import { Request } from 'express';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { studentInfoKeys } from './entities/student-info-entity';
 import { StudentService } from './student.service';
-import { AnalyticsService } from '../analytics/analytics.service';
 import {
   RootResponse,
   RootHeaders,
@@ -14,15 +13,12 @@ import {
   LoginResponseError,
   LoginHeaders,
 } from './swagger';
-import { AuthService } from 'src/auth/auth.service';
 
 @ApiTags('student')
 @Controller('student')
 export class StudentController {
   constructor(
     private readonly studentService: StudentService,
-    private readonly databaseService: AnalyticsService,
-    private readonly authService: AuthService,
   ) {}
 
   @Get()
@@ -35,10 +31,8 @@ export class StudentController {
   ) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
-    const page = await this.authService.login(studentCode, studentNip);
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    this.databaseService.save('student', request.url);
-    return await this.studentService.getStudent(page, paramsRequested);
+    return await this.studentService.getStudent(studentCode, studentNip, request.url, paramsRequested);
   }
 
   @Get('/progress')
@@ -47,9 +41,7 @@ export class StudentController {
   async getAcademicProgress(@Req() request: Request) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
-    const page = await this.authService.login(studentCode, studentNip);
-    this.databaseService.save('student', request.url);
-    return this.studentService.getAcademicProgress(page);
+    return this.studentService.getAcademicProgress(studentCode, studentNip, request.url);
   }
 
   @ApiResponse(LoginResponseOk)
@@ -59,7 +51,7 @@ export class StudentController {
   async login(@Req() request: Request) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
-    await this.authService.login(studentCode, studentNip);
+    await this.studentService.login(studentCode, studentNip);
   }
 
   parseStudentInfoQuery(query: string): string[] {

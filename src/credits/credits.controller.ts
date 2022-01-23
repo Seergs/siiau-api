@@ -1,8 +1,6 @@
 import { Controller, Get, Req } from '@nestjs/common';
 import { ApiHeaders, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { AuthService } from 'src/auth/auth.service';
-import { AnalyticsService } from 'src/analytics/analytics.service';
 import { CreditsService } from './credits.service';
 import { RootResponse, RootHeaders } from './swagger';
 
@@ -11,8 +9,6 @@ import { RootResponse, RootHeaders } from './swagger';
 export class CreditsController {
   constructor(
     private readonly creditsService: CreditsService,
-    private readonly databaseService: AnalyticsService,
-    private readonly authService: AuthService
   ) {}
 
   @ApiResponse(RootResponse)
@@ -23,8 +19,6 @@ export class CreditsController {
   ) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
-    const page = await this.authService.login(studentCode, studentNip);
-    this.databaseService.save('credits', request.url);
-    return this.creditsService.getCredits(page);
+    return this.creditsService.getCredits(studentCode, studentNip, request.url);
   }
 }

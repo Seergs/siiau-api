@@ -13,7 +13,7 @@ export class AdmissionService {
   async getAdmissionInformation(
     studentCode: string,
     studentNip: string,
-    url: string
+    url: string,
   ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.dbService.save('admission', url);

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {  Module } from '@nestjs/common';
 import { AdmissionService } from './admission.service';
 import { AdmissionController } from './admission.controller';
 import { DatabaseModule } from 'src/database/database.module';

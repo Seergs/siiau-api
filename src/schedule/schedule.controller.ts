@@ -6,7 +6,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { DatabaseService } from 'src/database/database.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { ScheduleService } from './schedule.service';
 import { RootResponse, RootHeaders, RootQuery } from './swagger';
 import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -16,7 +16,7 @@ import { AuthService } from 'src/auth/auth.service';
 @Controller('schedule')
 export class ScheduleController {
   constructor(
-    private readonly databaseService: DatabaseService,
+    private readonly databaseService: AnalyticsService,
     private readonly scheduleService: ScheduleService,
     private readonly authService: AuthService
   ) {}

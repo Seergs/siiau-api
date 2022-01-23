@@ -1,14 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { DatabaseService } from 'src/database/database.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
+import { DiscordService } from 'src/discord/discord.service';
 
 @Injectable()
 export class AdmissionService {
   private readonly logger = new Logger(AdmissionService.name);
   constructor(
-    private readonly dbService: DatabaseService,
+  private readonly analyticsService: AnalyticsService,
     private readonly authService: AuthService,
+    private readonly discordService: DiscordService
   ) {}
   async getAdmissionInformation(
     studentCode: string,
@@ -16,7 +18,8 @@ export class AdmissionService {
     url: string,
   ) {
     const page = await this.authService.login(studentCode, studentNip);
-    this.dbService.save('admission', url);
+    this.analyticsService.save('admission', url);
+    this.discordService.sendMessage("Hey! a request was made to " + this.getAdmissionInformation.name)
     try {
       const admission = await AdmissionInteractor.getAdmissionInformation(page);
       await page.close();

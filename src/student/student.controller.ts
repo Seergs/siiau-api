@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { studentInfoKeys } from './entities/student-info-entity';
 import { StudentService } from './student.service';
-import { DatabaseService } from '../database/database.service';
+import { AnalyticsService } from '../analytics/analytics.service';
 import {
   RootResponse,
   RootHeaders,
@@ -21,7 +21,7 @@ import { AuthService } from 'src/auth/auth.service';
 export class StudentController {
   constructor(
     private readonly studentService: StudentService,
-    private readonly databaseService: DatabaseService,
+    private readonly databaseService: AnalyticsService,
     private readonly authService: AuthService,
   ) {}
 

@@ -6,13 +6,14 @@ import { PuppeteerService } from './puppeteer/puppeteer.service';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { GradesModule } from './grades/grades.module';
 import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './database/database.module';
+import { AnalyticsModule } from './analytics//analytics.module';
 import { CreditsController } from './credits/credits.controller';
 import { CreditsService } from './credits/credits.service';
 import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DiscordModule } from './discord/discord.module';
 
 @Module({
   imports: [
@@ -20,13 +21,14 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     PuppeteerModule,
     GradesModule,
     AuthModule,
-    DatabaseModule,
+    AnalyticsModule,
     CreditsModule,
     AdmissionModule,
     ScheduleModule,
+    DiscordModule,
     CacheModule.register({
       ttl: 60*10,
-    })
+    }),
   ],
   controllers: [AppController, CreditsController],
   providers: [AppService, PuppeteerService, CreditsService, {

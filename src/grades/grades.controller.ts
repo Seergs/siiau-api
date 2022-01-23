@@ -8,7 +8,7 @@ import {
 import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-import { DatabaseService } from 'src/database/database.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { GradesService } from './grades.service';
 import { RootResponse, RootHeaders, RootQuery } from './swagger';
 
@@ -17,7 +17,7 @@ import { RootResponse, RootHeaders, RootQuery } from './swagger';
 export class GradesController {
   constructor(
     private readonly gradesService: GradesService,
-    private readonly databaseService: DatabaseService,
+    private readonly databaseService: AnalyticsService,
     private readonly authService: AuthService
   ) {}
 

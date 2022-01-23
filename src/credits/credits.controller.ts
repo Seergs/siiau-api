@@ -2,7 +2,7 @@ import { Controller, Get, Req } from '@nestjs/common';
 import { ApiHeaders, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-import { DatabaseService } from 'src/database/database.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { CreditsService } from './credits.service';
 import { RootResponse, RootHeaders } from './swagger';
 
@@ -11,7 +11,7 @@ import { RootResponse, RootHeaders } from './swagger';
 export class CreditsController {
   constructor(
     private readonly creditsService: CreditsService,
-    private readonly databaseService: DatabaseService,
+    private readonly databaseService: AnalyticsService,
     private readonly authService: AuthService
   ) {}
 

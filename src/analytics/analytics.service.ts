@@ -6,8 +6,8 @@ import {
 import * as mysql from 'mysql2/promise';
 
 @Injectable()
-export class DatabaseService {
-  private readonly logger = new Logger(DatabaseService.name);
+export class AnalyticsService {
+  private readonly logger = new Logger(AnalyticsService.name);
   private db: mysql.Connection;
   constructor() {
     this.initializeConnection();

@@ -6,8 +6,9 @@ export class DiscordService {
   private readonly logger = new Logger(DiscordService.name);
 
   async sendMessage(message: string) {
+    const environment = process.env.NODE_ENV;
     const formattedMessage =
-      process.env.NODE_ENV === 'production' ? `@everyone ${message}` : message;
+      environment === 'production' ? `@everyone ${message}` : message;
 
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     fetch(webhookUrl, {
@@ -17,6 +18,6 @@ export class DiscordService {
       },
       body: JSON.stringify({ content: formattedMessage }),
     });
-    this.logger.log('Sent discord message');
+    this.logger.log('Sent discord message for env' + environment);
   }
 }

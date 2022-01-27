@@ -18,6 +18,6 @@ export class DiscordService {
       },
       body: JSON.stringify({ content: formattedMessage }),
     });
-    this.logger.log('Sent discord message for env' + environment);
+    this.logger.log('Sent discord message');
   }
 }

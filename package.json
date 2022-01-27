@@ -20,9 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "npm run prestart:prod",
-    "heroku-postbuild": "npm install --only=dev --no-shrinkwrap && npm run build"
-
+    "postinstall": "npm run prestart:prod"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -39,10 +37,10 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.3.0"
+    "swagger-ui-express": "^4.3.0",
+    "@nestjs/cli": "^8.0.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.2.6",
     "@types/cache-manager": "^3.4.2",

@@ -7,7 +7,7 @@ export class DiscordService {
 
   async sendMessage(message: string) {
     const formattedMessage =
-      process.env.NODE_EV === 'production' ? `@everyone ${message}` : message;
+      process.env.NODE_ENV === 'production' ? `@everyone ${message}` : message;
 
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     fetch(webhookUrl, {

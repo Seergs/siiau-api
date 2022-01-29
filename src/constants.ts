@@ -19,6 +19,7 @@ export default {
       registerLink:
         "//a[contains(., 'REGISTRO') and not(contains(., 'PRERREGISTRO'))]",
       scheduleLink: "//a[contains(., 'Horario')]",
+      paymentOrderLink: "//a[contains(., 'Orden De Pago')]",
     },
     studentInfo: {
       code: '/html/body/div[3]/table/tbody/tr[2]/td[1]',
@@ -130,6 +131,19 @@ export default {
         11: 'teacher',
         12: 'dateOfStart',
         13: 'dateOfEnd',
+      },
+    },
+    payment: {
+      validator: 'Estado de Cuenta del Estudiante',
+      cell: '/html/body/table[1]/tbody/tr[3]/td/table/tbody/tr[{i}]/td[{j}]',
+      cells: {
+        1: 'account',
+        2: 'concept',
+        3: 'description',
+        4: 'date',
+        5: 'expirationDate',
+        6: 'amount',
+        total: 'total',
       },
     },
   },

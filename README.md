@@ -15,6 +15,7 @@ Note: For every request you need to send headers `x-student-code` and `x-student
 - Credits information (required, aquired, left, split by type, etc)
 - Information about the admission (gpa from the school of origin, score of the admision test, etc)
 - Student schedule
+- Payment order information
 
 ### Known issues
 

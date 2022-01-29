@@ -21,3 +21,4 @@ Note: For every request you need to send headers `x-student-code` and `x-student
 - Sometimes there is an error when trying to find some element from the page, still trying to find the bug, just re-make the request for now
 - If the student has a survey to complete, then some operations like kardex (grades) will fail
 - New requests take a long time to complete since we are doing scrapping to get the data. If a request is made again to the same endpoint with the same input (studentCode, studentNip, same query params, etc) then the request will finish instantly since we are caching responses for 10 minutes.
+- Currently if the user has multiple careers in SIIAU, some functionality will fail, like the retrieval of the grades and the general student information.

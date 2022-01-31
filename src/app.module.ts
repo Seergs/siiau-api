@@ -15,6 +15,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DiscordModule } from './discord/discord.module';
 import { PaymentModule } from './payment/payment.module';
+import { HttpCacheInterceptor } from './cache/cache.interceptor';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { PaymentModule } from './payment/payment.module';
     CreditsService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
+      useClass: HttpCacheInterceptor,
     },
   ],
 })

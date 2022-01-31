@@ -31,7 +31,6 @@ export class HttpCacheInterceptor extends CacheInterceptor {
 
     const cacheKey = `${httpAdapter.getRequestUrl(request)}_${studentCode}_${studentNip}`;
 
-    console.log("Cache key is " + cacheKey);
     return cacheKey;
   }
 }

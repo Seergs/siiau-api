@@ -4,6 +4,7 @@ import { StudentProgressInteractor } from './interactors/student-progress-intera
 import { AuthService } from 'src/auth/auth.service';
 import { AnalyticsService } from 'src/analytics/analytics.service';
 import { DiscordService } from 'src/discord/discord.service';
+import { Request } from 'express';
 
 @Injectable()
 export class StudentService {
@@ -15,17 +16,16 @@ export class StudentService {
     private readonly discordService: DiscordService,
   ) {}
 
-  async getStudent(
-    studentCode: string,
-    studentNip: string,
-    url: string,
-    paramsRequested: string[],
-  ) {
+  async getStudent(request: Request, paramsRequested: string[]) {
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
-    this.analyticsService.save('student', url);
-    this.discordService.sendMessage(
-      'Hey! a request was made to ' + this.getStudent.name,
-    );
+    this.analyticsService.save('student', request.url);
+    if (this.discordService.shouldSendDiscordMessage(request)) {
+      this.discordService.sendMessage(
+        'Hey! a request was made to ' + this.getStudent.name,
+      );
+    }
     try {
       const studentInfo = await StudentInfoInteractor.getStudentInfo(
         page,
@@ -40,16 +40,16 @@ export class StudentService {
     }
   }
 
-  async getAcademicProgress(
-    studentCode: string,
-    studentNip: string,
-    url: string,
-  ) {
+  async getAcademicProgress(request: Request) {
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
-    this.analyticsService.save('student', url);
-    this.discordService.sendMessage(
-      'Hey! a request was made to ' + this.getAcademicProgress.name,
-    );
+    this.analyticsService.save('student', request.url);
+    if (this.discordService.shouldSendDiscordMessage(request)) {
+      this.discordService.sendMessage(
+        'Hey! a request was made to ' + this.getAcademicProgress.name,
+      );
+    }
     try {
       const studentProgress =
         await StudentProgressInteractor.getAcademicProgress(page);

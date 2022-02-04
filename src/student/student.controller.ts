@@ -27,28 +27,15 @@ export class StudentController {
     @Query() query: Record<string, any>,
     @Req() request: Request,
   ) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    return await this.studentService.getStudent(
-      studentCode,
-      studentNip,
-      request.url,
-      paramsRequested,
-    );
+    return await this.studentService.getStudent(request, paramsRequested);
   }
 
   @Get('/progress')
   @ApiResponse(ProgressResponse)
   @ApiHeaders(ProgressHeaders)
   async getAcademicProgress(@Req() request: Request) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    return this.studentService.getAcademicProgress(
-      studentCode,
-      studentNip,
-      request.url,
-    );
+    return this.studentService.getAcademicProgress(request);
   }
 
   @ApiResponse(LoginResponseOk)

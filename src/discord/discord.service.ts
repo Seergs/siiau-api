@@ -7,9 +7,11 @@ export class DiscordService {
   private readonly logger = new Logger(DiscordService.name);
 
   shouldSendDiscordMessage(request: Request): boolean {
-    const apiKey = request.header['x-api-key'];
+    const apiKey = request.headers['x-api-key'];
+    const shouldSendMessage = !apiKey || apiKey !== process.env.API_KEY;
 
-    return !apiKey || apiKey !== process.env.API_KEY;
+    this.logger.log("Should send discord message: " + shouldSendMessage)
+    return shouldSendMessage;
   }
 
   async sendMessage(message: string) {
@@ -25,6 +27,6 @@ export class DiscordService {
       },
       body: JSON.stringify({ content: formattedMessage }),
     });
-    this.logger.log('Sent discord message');
+    this.logger.log('Discord message sent');
   }
 }

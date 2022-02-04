@@ -1,9 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Request } from 'express';
 import fetch from 'node-fetch';
 
 @Injectable()
 export class DiscordService {
   private readonly logger = new Logger(DiscordService.name);
+
+  shouldSendDiscordMessage(request: Request): boolean {
+    const apiKey = request.header['x-api-key'];
+
+    return !apiKey || apiKey !== process.env.API_KEY;
+  }
 
   async sendMessage(message: string) {
     const environment = process.env.NODE_ENV;

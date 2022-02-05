@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Request } from 'express';
 import { Page } from 'puppeteer';
 import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AuthService } from 'src/auth/auth.service';
@@ -15,17 +16,16 @@ export class ScheduleService {
     private readonly discordService: DiscordService,
   ) {}
 
-  async getSchedule(
-    studentCode: string,
-    studentNip: string,
-    url: string,
-    calendar: string,
-  ) {
+  async getSchedule(request: Request, calendar: string) {
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
-    this.analyticsService.save('schedule', url);
-    this.discordService.sendMessage(
-      'Hey! a request was made to ' + this.getSchedule.name,
-    );
+    this.analyticsService.save('schedule', request.url);
+    if (this.discordService.shouldSendDiscordMessage(request)) {
+      this.discordService.sendMessage(
+        'Hey! a request was made to ' + this.getSchedule.name,
+      );
+    }
     if (!calendar) {
       return this.getCurrentSchedule(page);
     }

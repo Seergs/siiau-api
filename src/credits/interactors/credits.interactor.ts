@@ -65,7 +65,7 @@ export class CreditsInteractor {
   }
 
   static async getDetailedCredits(frame: Frame) {
-    let credits: {
+    const credits: {
       mandatorySpecialized?: AreaCredits;
       selectiveSpecialized?: AreaCredits;
       elective?: AreaCredits;
@@ -81,7 +81,7 @@ export class CreditsInteractor {
     let i: number;
     let j: number;
     for (i = START_ROW; i < END_ROW; ++i) {
-      let values = [];
+      const values = [];
       for (j = START_COLUMN; j <= NUMBER_OF_COLUMNS; ++j) {
         const selector = constants.selectors.credits.detailed.cell;
         const currentCellSelector = selector

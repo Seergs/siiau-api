@@ -4,7 +4,6 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { Page } from 'puppeteer';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';

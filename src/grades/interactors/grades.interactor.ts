@@ -23,7 +23,7 @@ export class GradesInteractor {
 
   static async getStudentGradesForCalendars(calendars: string[], page: Page) {
     await this.navigateToRequestedPage(page, true, null);
-    let grades: CalendarGrades[] = [];
+    const grades: CalendarGrades[] = [];
     for (const calendar of calendars) {
       const gradesForCalendar = await this.getGradesForCalendar(calendar, page);
       grades.push(gradesForCalendar);
@@ -207,7 +207,7 @@ export class GradesInteractor {
       page,
       'Contenido',
     );
-    let results: CalendarGrades[] = [];
+    const results: CalendarGrades[] = [];
     const calendars = await this.getAvailableCalendars(contentFrame);
     for (const calendar of calendars) {
       const result = await this.getGradesForCalendar(calendar, page);
@@ -222,7 +222,7 @@ export class GradesInteractor {
       'Contenido',
     );
 
-    let grades: KardexGrade[] = [];
+    const grades: KardexGrade[] = [];
 
     const NUMBER_OF_COLUMNS = 7;
     const START_COLUMN = 1;
@@ -230,7 +230,7 @@ export class GradesInteractor {
     let j: number;
     let k: number;
 
-    let i = await this.findRowOfCalendar(calendar, contentFrame);
+    const i = await this.findRowOfCalendar(calendar, contentFrame);
 
     for (j = i + 2; thereAreMoreRows; ++j) {
       const grade = new KardexGrade();
@@ -364,7 +364,7 @@ export class GradesInteractor {
   }
 
   static async getAvailableCalendars(frame: Frame) {
-    let calendars = [];
+    const calendars = [];
     const CALENDAR_KEY_START_INDEX = 11;
     const CALENDAR_LENGTH = 15;
     const selector = constants.selectors.studentKardex.calendarAll;
@@ -383,7 +383,7 @@ export class GradesInteractor {
   }
 
   private static getIndexes(text: string, search: string) {
-    let indexes = [];
+    const indexes = [];
     let i = -1;
     while ((i = text.indexOf(search, i + 1)) !== -1) {
       indexes.push(i);

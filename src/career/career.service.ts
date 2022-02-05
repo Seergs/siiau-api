@@ -12,7 +12,7 @@ export class CareerService {
     let tries = 0;
     while (tries < 3) {
       await page.waitForTimeout(1000);
-      let contetStr = await workingFrame.content();
+      const contetStr = await workingFrame.content();
       if (
         contetStr.includes(constants.selectors.home.hasMoreCareersValidator)
       ) {
@@ -36,7 +36,7 @@ export class CareerService {
       );
       await contentFrame.click('input[type=submit]');
     } else {
-      let indexSelected = await this.selectOneCareer(
+      const indexSelected = await this.selectOneCareer(
         contentFrame,
         selectedCareer,
       );
@@ -63,17 +63,17 @@ export class CareerService {
   static async selectOneCareer(workingFrame: Frame, career: string) {
     career = career.toUpperCase();
     let moreRows = true;
-    let selector = constants.selectors.home.selectCareerCell;
+    const selector = constants.selectors.home.selectCareerCell;
 
     for (let i = 3; moreRows; i++) {
-      let selectorCell = selector.replace('{i}', i.toString());
+      const selectorCell = selector.replace('{i}', i.toString());
 
       try {
-        let cell = await PuppeteerService.getElementFromWrapperNoWait(
+        const cell = await PuppeteerService.getElementFromWrapperNoWait(
           workingFrame,
           selectorCell,
         );
-        let text = await cell.evaluate((c) => c.textContent.trim());
+        const text = await cell.evaluate((c) => c.textContent.trim());
 
         if (text.includes(career)) {
           return i;

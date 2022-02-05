@@ -42,7 +42,7 @@ export class GradesController {
     // If it is for the current calendar, then it's all good
     if (receivedCalendars === 'current') return [receivedCalendars];
 
-    let calendars: string[] = [];
+    const calendars: string[] = [];
     const calendarsUppercase = receivedCalendars.toUpperCase();
     const calendarsArray = calendarsUppercase.split(',');
     for (const c of calendarsArray) {

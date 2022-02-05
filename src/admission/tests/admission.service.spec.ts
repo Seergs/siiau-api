@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { AdmissionService } from '../admission.service';
 
 class ApiServiceMock {
-  getAdmissionInformation(_: string, __: string, ___: string) {
+  getAdmissionInformation() {
     return [];
   }
 }

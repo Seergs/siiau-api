@@ -26,7 +26,7 @@ export class StudentProgressInteractor {
     const START_ROW = 3;
     let thereAreMoreRows = true;
 
-    let calendars: StudentProgress[] = [];
+    const calendars: StudentProgress[] = [];
 
     let i: number;
     let j: number;

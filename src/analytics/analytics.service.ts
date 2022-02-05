@@ -48,7 +48,7 @@ export class AnalyticsService {
   }
 
   async getSummary() {
-    let results = {};
+    const results = {};
     const query = 'SELECT * from analytics';
     try {
       const [rows] = await this.db.execute(query);

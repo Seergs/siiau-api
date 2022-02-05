@@ -5,38 +5,26 @@ import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { AuthService } from '../auth.service';
 
 class PuppeteerMock {
-  setUpInitialPage(_: string) {
+  setUpInitialPage() {
     return pageValid;
   }
 }
 
 const pageValid = {
-  waitForTimeout: (_: number) => {},
+  waitForTimeout: jest.fn(),
   frames: () => [firstScreenFrame, validContentFrame],
-};
-
-const pageInvalid = {
-  waitForTimeout: (_: number) => {},
-  frames: () => [firstScreenFrame, invalidContentFrame],
 };
 
 const firstScreenFrame = {
   name: () => 'mainFrame',
-  type: () => {},
-  click: () => {},
+  type: jest.fn(),
+  click: jest.fn(),
 };
 const validContentFrame = {
   name: () => 'Contenido',
-  type: () => {},
-  click: () => {},
+  type: jest.fn(),
+  click: jest.fn(),
   content: () => constants.selectors.home.validator,
-};
-
-const invalidContentFrame = {
-  name: () => 'Contenido',
-  type: () => {},
-  click: () => {},
-  content: () => '',
 };
 
 describe.only('AuthService', () => {
@@ -63,8 +51,8 @@ describe.only('AuthService', () => {
   });
 
   it('should fail if no studentCode or studentNip', async () => {
-    let studentCode: string;
-    let studentNip: string;
+    let studentCode: string = undefined;
+    let studentNip: string = undefined;
     try {
       await authService.login(studentCode, studentNip);
       expect(true).toBe(false);

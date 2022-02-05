@@ -126,7 +126,7 @@ export class ScheduleInteractor {
   private static async getStudentScheduleFromPage(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
-    let schedule: SubjectSchedule[] = [];
+    const schedule: SubjectSchedule[] = [];
 
     const NUMBER_OF_COLUMNS = 17;
     const START_COLUMN = 1;
@@ -142,7 +142,7 @@ export class ScheduleInteractor {
     for (i = START_ROW; thereAreMoreRows; ++i) {
       const subjectSchedule: SubjectSchedule = new SubjectSchedule();
       const currentSchedule = new Schedule();
-      let days = [];
+      const days = [];
       const daysKeys = [];
       let hasExtraData = false;
       for (j = START_COLUMN; j <= NUMBER_OF_COLUMNS; ++j) {
@@ -201,8 +201,8 @@ export class ScheduleInteractor {
     row: number,
   ) {
     const schedule = new Schedule();
-    let days = [];
-    let daysKeys = [];
+    const days = [];
+    const daysKeys = [];
     try {
       let j = 2;
       while (j < 14) {

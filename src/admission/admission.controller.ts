@@ -13,12 +13,6 @@ export class AdmissionController {
   @ApiHeaders(RootHeaders)
   @Get()
   async getAdmissionInfo(@Req() request: Request) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    return this.admissionService.getAdmissionInformation(
-      studentCode,
-      studentNip,
-      request.url,
-    );
+    return this.admissionService.getAdmissionInformation(request);
   }
 }

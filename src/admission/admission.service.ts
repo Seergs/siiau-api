@@ -3,6 +3,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
 import { DiscordService } from 'src/discord/discord.service';
+import { Request } from 'express';
 
 @Injectable()
 export class AdmissionService {
@@ -12,16 +13,16 @@ export class AdmissionService {
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
   ) {}
-  async getAdmissionInformation(
-    studentCode: string,
-    studentNip: string,
-    url: string,
-  ) {
+  async getAdmissionInformation(request: Request) {
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
-    this.analyticsService.save('admission', url);
-    this.discordService.sendMessage(
-      'Hey! a request was made to ' + this.getAdmissionInformation.name,
-    );
+    this.analyticsService.save('admission', request.url);
+    if (this.discordService.shouldSendDiscordMessage(request)) {
+      this.discordService.sendMessage(
+        'Hey! a request was made to ' + this.getAdmissionInformation.name,
+      );
+    }
     try {
       const admission = await AdmissionInteractor.getAdmissionInformation(page);
       await page.close();
@@ -31,4 +32,5 @@ export class AdmissionService {
       return 'Something went wrong getting the student admission information';
     }
   }
+
 }

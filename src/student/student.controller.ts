@@ -27,36 +27,16 @@ export class StudentController {
     @Query() query: Record<string, any>,
     @Req() request: Request,
   ) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    const selectedCareer = this.getSelectedCareer(query["selectedCareer"]);
-    return await this.studentService.getStudent(
-      studentCode,
-      studentNip,
-      request.url,
-      paramsRequested,
-      selectedCareer
-    );
+    const selectedCareer = this.getSelectedCareer(query['getSelectedCareer']);
+    return await this.studentService.getStudent(request, paramsRequested, selectedCareer);
   }
 
   @Get('/progress')
   @ApiResponse(ProgressResponse)
   @ApiHeaders(ProgressHeaders)
-  @ApiQuery(RootQuery)
-  async getAcademicProgress(
-    @Query() query: Record<string, any>,
-    @Req() request: Request
-    ) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    const selectedCareer = this.getSelectedCareer(query["selectedCareer"]);
-    return this.studentService.getAcademicProgress(
-      studentCode,
-      studentNip,
-      selectedCareer,
-      request.url,
-    );
+  async getAcademicProgress(@Req() request: Request) {
+    return this.studentService.getAcademicProgress(request);
   }
 
   @ApiResponse(LoginResponseOk)

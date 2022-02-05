@@ -28,14 +28,16 @@ describe.only('AdmissionService', () => {
       admissionService,
       'getAdmissionInformation',
     );
-    const studentCode = 'mycode';
-    const studentNip = 'mynip';
-    const url = 'admission';
-    admissionService.getAdmissionInformation(studentCode, studentNip, url);
+    const req = {
+      headers: {
+	'x-student-code': "mycode",
+	'x-student-nip': "mynip"
+      },
+      url: "admission"
+    }
+    admissionService.getAdmissionInformation(req as any);
     expect(getAdmissionInfoSpy).toHaveBeenCalledWith(
-      studentCode,
-      studentNip,
-      url,
+      req
     );
   });
 });

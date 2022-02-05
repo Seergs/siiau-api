@@ -23,17 +23,13 @@ export class GradesController {
     @Query() query: Record<string, any>,
     @Req() request: Request,
   ) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
     const calendars = query['calendar'];
+    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
     const parsedCalendars = this.parseCalendars(calendars);
     return this.gradesService.getGrades(
-      studentCode,
-      studentNip,
-      selectedCareer,
-      request.url,
+	request, 
       parsedCalendars,
+      selectedCareer
     );
   }
 

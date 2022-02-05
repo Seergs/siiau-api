@@ -23,16 +23,9 @@ export class ScheduleController {
     @Query() query: Record<string, any>,
     @Req() request: Request,
   ) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
     const calendar = query['calendar'];
     const parsedCalendar = this.parseCalendar(calendar);
-    return this.scheduleService.getSchedule(
-      studentCode,
-      studentNip,
-      request.url,
-      parsedCalendar,
-    );
+    return this.scheduleService.getSchedule(request, parsedCalendar);
   }
 
   private parseCalendar(receivedCalendar: string) {

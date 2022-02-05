@@ -13,8 +13,6 @@ export class CreditsController {
   @ApiHeaders(RootHeaders)
   @Get()
   async getCredits(@Req() request: Request) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    return this.creditsService.getCredits(studentCode, studentNip, request.url);
+    return this.creditsService.getCredits(request);
   }
 }

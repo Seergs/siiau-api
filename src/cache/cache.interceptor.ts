@@ -29,7 +29,9 @@ export class HttpCacheInterceptor extends CacheInterceptor {
 
     if (!studentCode || !studentNip) return undefined;
 
-    const cacheKey = `${httpAdapter.getRequestUrl(request)}_${studentCode}_${studentNip}`;
+    const cacheKey = `${httpAdapter.getRequestUrl(
+      request,
+    )}_${studentCode}_${studentNip}`;
 
     return cacheKey;
   }

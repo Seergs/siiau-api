@@ -13,7 +13,10 @@ import { CareerService } from 'src/career/career.service';
 export class GradesInteractor {
   private static readonly logger = new Logger(GradesInteractor.name);
 
-  static async getStudentGradesForCurrentCalendar(page: Page, selectedCareer: string) {
+  static async getStudentGradesForCurrentCalendar(
+    page: Page,
+    selectedCareer: string,
+  ) {
     await this.navigateToRequestedPage(page, false, selectedCareer);
     return await this.getGradesForCurrentCalendar(page);
   }
@@ -36,7 +39,7 @@ export class GradesInteractor {
   static async navigateToRequestedPage(
     page: Page,
     areGradesFromKardex: boolean,
-    selectedCareer: string
+    selectedCareer: string,
   ) {
     if (areGradesFromKardex) {
       await this.navigateToKardexPage(page);
@@ -59,7 +62,11 @@ export class GradesInteractor {
         'Contenido',
       );
 
-      if(await CareerService.hasMoreCareers(page, contentFrame)) await CareerService.processCareersSelection(contentFrame, selectedCareer);
+      if (await CareerService.hasMoreCareers(page, contentFrame))
+        await CareerService.processCareersSelection(
+          contentFrame,
+          selectedCareer,
+        );
 
       await this.waitUntilRequestedPageIsLoaded(
         page,
@@ -81,8 +88,8 @@ export class GradesInteractor {
 
       await this.waitUntilRequestedPageIsLoaded(
         page,
-        constants.selectors.studentKardex.validator
-        );
+        constants.selectors.studentKardex.validator,
+      );
     } catch (e) {
       this.logger.error(e);
     }
@@ -90,7 +97,7 @@ export class GradesInteractor {
 
   private static async waitUntilRequestedPageIsLoaded(
     page: Page,
-    validator: string
+    validator: string,
   ) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,

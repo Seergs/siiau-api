@@ -28,7 +28,7 @@ async function bootstrap() {
       CreditsModule,
       AdmissionModule,
       ScheduleModule,
-      PaymentModule
+      PaymentModule,
     ],
   });
   SwaggerModule.setup('api', app, document, {

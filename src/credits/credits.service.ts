@@ -22,7 +22,7 @@ export class CreditsService {
     this.analyticsService.save('credits', request.url);
     if (this.discordService.shouldSendDiscordMessage(request)) {
       this.discordService.sendMessage(
-	'Hey! a request was made to ' + this.getCredits.name,
+        'Hey! a request was made to ' + this.getCredits.name,
       );
     }
     try {

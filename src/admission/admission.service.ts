@@ -32,5 +32,4 @@ export class AdmissionService {
       return 'Something went wrong getting the student admission information';
     }
   }
-
 }

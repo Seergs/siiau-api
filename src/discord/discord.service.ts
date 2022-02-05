@@ -10,7 +10,7 @@ export class DiscordService {
     const apiKey = request.headers['x-api-key'];
     const shouldSendMessage = !apiKey || apiKey !== process.env.API_KEY;
 
-    this.logger.log("Should send discord message: " + shouldSendMessage)
+    this.logger.log('Should send discord message: ' + shouldSendMessage);
     return shouldSendMessage;
   }
 

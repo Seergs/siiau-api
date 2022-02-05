@@ -16,7 +16,11 @@ export class StudentService {
     private readonly discordService: DiscordService,
   ) {}
 
-  async getStudent(request: Request, paramsRequested: string[], selectedCareer: string) {
+  async getStudent(
+    request: Request,
+    paramsRequested: string[],
+    selectedCareer: string,
+  ) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
@@ -30,7 +34,7 @@ export class StudentService {
       const studentInfo = await StudentInfoInteractor.getStudentInfo(
         page,
         paramsRequested,
-        selectedCareer
+        selectedCareer,
       );
       await page.close();
       this.logger.log('Done getting student information');
@@ -53,7 +57,10 @@ export class StudentService {
     }
     try {
       const studentProgress =
-        await StudentProgressInteractor.getAcademicProgress(page, selectedCareer);
+        await StudentProgressInteractor.getAcademicProgress(
+          page,
+          selectedCareer,
+        );
       await page.close();
       return studentProgress;
     } catch (e) {

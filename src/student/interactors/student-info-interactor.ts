@@ -8,12 +8,16 @@ import { CareerService } from 'src/career/career.service';
 export class StudentInfoInteractor {
   private static readonly logger = new Logger(StudentInfoInteractor.name);
 
-  static async getStudentInfo(page: Page, paramsRequested: string[], selectedCareer: string) {
+  static async getStudentInfo(
+    page: Page,
+    paramsRequested: string[],
+    selectedCareer: string,
+  ) {
     await this.navigateToRequestedPage(page, selectedCareer);
     return await this.getInfo(page, paramsRequested);
   }
 
-  private static async navigateToRequestedPage(page: Page, selectedCareer ) {
+  private static async navigateToRequestedPage(page: Page, selectedCareer) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -26,9 +30,13 @@ export class StudentInfoInteractor {
         page,
         'Contenido',
       );
-     
-      if(await CareerService.hasMoreCareers(page, contentFrame)) await CareerService.processCareersSelection(contentFrame, selectedCareer);
-      
+
+      if (await CareerService.hasMoreCareers(page, contentFrame))
+        await CareerService.processCareersSelection(
+          contentFrame,
+          selectedCareer,
+        );
+
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;
       while (!isStudentInfoPageLoaded && retryCounter < 5) {

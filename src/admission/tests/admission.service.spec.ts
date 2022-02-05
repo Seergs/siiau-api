@@ -30,14 +30,12 @@ describe.only('AdmissionService', () => {
     );
     const req = {
       headers: {
-	'x-student-code': "mycode",
-	'x-student-nip': "mynip"
+        'x-student-code': 'mycode',
+        'x-student-nip': 'mynip',
       },
-      url: "admission"
-    }
+      url: 'admission',
+    };
     admissionService.getAdmissionInformation(req as any);
-    expect(getAdmissionInfoSpy).toHaveBeenCalledWith(
-      req
-    );
+    expect(getAdmissionInfoSpy).toHaveBeenCalledWith(req);
   });
 });

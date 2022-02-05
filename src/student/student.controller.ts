@@ -29,7 +29,11 @@ export class StudentController {
   ) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
     const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
-    return await this.studentService.getStudent(request, paramsRequested, selectedCareer);
+    return await this.studentService.getStudent(
+      request,
+      paramsRequested,
+      selectedCareer,
+    );
   }
 
   @Get('/progress')
@@ -37,10 +41,10 @@ export class StudentController {
   @ApiHeaders(ProgressHeaders)
   async getAcademicProgress(
     @Req() request: Request,
-    @Query() query: Record<string, any>
-    ) {
-      const selectedCareer=this.getSelectedCareer(query['selectedCareer']);
-      return this.studentService.getAcademicProgress(request, selectedCareer);
+    @Query() query: Record<string, any>,
+  ) {
+    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
+    return this.studentService.getAcademicProgress(request, selectedCareer);
   }
 
   @ApiResponse(LoginResponseOk)
@@ -57,13 +61,11 @@ export class StudentController {
     const allParams = studentInfoKeys;
     if (!query) {
       return allParams;
-    } 
-     return query.split(",")
+    }
+    return query.split(',');
   }
 
-  getSelectedCareer(selectedCareer: string) : string{
-     return selectedCareer? selectedCareer.toUpperCase():null
+  getSelectedCareer(selectedCareer: string): string {
+    return selectedCareer ? selectedCareer.toUpperCase() : null;
   }
-    
-  
 }

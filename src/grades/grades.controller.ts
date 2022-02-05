@@ -27,9 +27,9 @@ export class GradesController {
     const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
     const parsedCalendars = this.parseCalendars(calendars);
     return this.gradesService.getGrades(
-	request, 
+      request,
       parsedCalendars,
-      selectedCareer
+      selectedCareer,
     );
   }
 
@@ -95,7 +95,7 @@ export class GradesController {
     );
   }
 
-  private getSelectedCareer(query: string): string{
-    return query ? query.toUpperCase(): null;
+  private getSelectedCareer(query: string): string {
+    return query ? query.toUpperCase() : null;
   }
 }

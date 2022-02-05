@@ -81,7 +81,10 @@ export class StudentProgressInteractor {
     return total;
   }
 
-  private static async navigateToRequestedPage(page: Page, selectedCareer: string) {
+  private static async navigateToRequestedPage(
+    page: Page,
+    selectedCareer: string,
+  ) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -95,7 +98,11 @@ export class StudentProgressInteractor {
         'Contenido',
       );
 
-      if(await CareerService.hasMoreCareers(page, contentFrame)) await CareerService.processCareersSelection(contentFrame, selectedCareer);
+      if (await CareerService.hasMoreCareers(page, contentFrame))
+        await CareerService.processCareersSelection(
+          contentFrame,
+          selectedCareer,
+        );
 
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;

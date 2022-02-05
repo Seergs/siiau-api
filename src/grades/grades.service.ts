@@ -19,17 +19,17 @@ export class GradesService {
   async getGrades(
     request: Request,
     calendars: string[],
-    selectedCareer: string
+    selectedCareer: string,
   ) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('grades', request.url);
-      if (this.discordService.shouldSendDiscordMessage(request)) {
-	this.discordService.sendMessage(
-	  'Hey! a request was made to ' + this.getGrades.name,
-	);
-      }
+    if (this.discordService.shouldSendDiscordMessage(request)) {
+      this.discordService.sendMessage(
+        'Hey! a request was made to ' + this.getGrades.name,
+      );
+    }
     if (!calendars) {
       return this.getGradesForAllCalendars(page);
     }
@@ -56,7 +56,7 @@ export class GradesService {
     try {
       const grades = await GradesInteractor.getStudentGradesForCurrentCalendar(
         page,
-        selectedCareer
+        selectedCareer,
       );
       await page.close();
       return grades;

@@ -1,5 +1,5 @@
-import { ApiHeaderOptions, ApiResponseOptions } from "@nestjs/swagger";
-import { PaymentResponse } from "./entities/payment.entity";
+import { ApiHeaderOptions, ApiResponseOptions } from '@nestjs/swagger';
+import { PaymentResponse } from './entities/payment.entity';
 
 export const RootResponse: ApiResponseOptions = {
   status: 200,

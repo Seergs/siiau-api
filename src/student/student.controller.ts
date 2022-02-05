@@ -28,15 +28,19 @@ export class StudentController {
     @Req() request: Request,
   ) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    const selectedCareer = this.getSelectedCareer(query['getSelectedCareer']);
+    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
     return await this.studentService.getStudent(request, paramsRequested, selectedCareer);
   }
 
   @Get('/progress')
   @ApiResponse(ProgressResponse)
   @ApiHeaders(ProgressHeaders)
-  async getAcademicProgress(@Req() request: Request) {
-    return this.studentService.getAcademicProgress(request);
+  async getAcademicProgress(
+    @Req() request: Request,
+    @Query() query: Record<string, any>
+    ) {
+      const selectedCareer=this.getSelectedCareer(query['selectedCareer']);
+      return this.studentService.getAcademicProgress(request, selectedCareer);
   }
 
   @ApiResponse(LoginResponseOk)

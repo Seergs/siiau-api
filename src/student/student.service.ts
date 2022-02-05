@@ -41,7 +41,7 @@ export class StudentService {
     }
   }
 
-  async getAcademicProgress(request: Request) {
+  async getAcademicProgress(request: Request, selectedCareer) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);

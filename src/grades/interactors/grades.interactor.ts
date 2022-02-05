@@ -8,7 +8,7 @@ import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ExtraKardexData, Grade, KardexGrade } from '../entities/grade.entity';
 import { CalendarGrades } from '../entities/calendar-grades.entity';
-import { CareerSelector } from 'src/careerSelector/careerSelector';
+import { CareerService } from 'src/career/career.service';
 
 export class GradesInteractor {
   private static readonly logger = new Logger(GradesInteractor.name);
@@ -59,7 +59,7 @@ export class GradesInteractor {
         'Contenido',
       );
 
-      if(await CareerSelector.hasMoreCareers(page, contentFrame)) await CareerSelector.processCareersSelection(contentFrame, selectedCareer);
+      if(await CareerService.hasMoreCareers(page, contentFrame)) await CareerService.processCareersSelection(contentFrame, selectedCareer);
 
       await this.waitUntilRequestedPageIsLoaded(
         page,

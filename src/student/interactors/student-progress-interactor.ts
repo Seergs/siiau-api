@@ -1,6 +1,6 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Frame, Page } from 'puppeteer';
-import { CareerSelector } from 'src/careerSelector/careerSelector';
+import { CareerService } from 'src/career/career.service';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import {
@@ -95,7 +95,7 @@ export class StudentProgressInteractor {
         'Contenido',
       );
 
-      if(await CareerSelector.hasMoreCareers(page, contentFrame)) await CareerSelector.processCareersSelection(contentFrame, selectedCareer);
+      if(await CareerService.hasMoreCareers(page, contentFrame)) await CareerService.processCareersSelection(contentFrame, selectedCareer);
 
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;

@@ -3,7 +3,7 @@ import { Frame, Page } from 'puppeteer';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import constants from '../../constants';
 import { StudentInfo, studentInfoKeys } from '../entities/student-info-entity';
-import { CareerSelector } from '../../careerSelector/careerSelector';
+import { CareerService } from 'src/career/career.service';
 
 export class StudentInfoInteractor {
   private static readonly logger = new Logger(StudentInfoInteractor.name);
@@ -27,7 +27,7 @@ export class StudentInfoInteractor {
         'Contenido',
       );
      
-      if(await CareerSelector.hasMoreCareers(page, contentFrame)) await CareerSelector.processCareersSelection(contentFrame, selectedCareer);
+      if(await CareerService.hasMoreCareers(page, contentFrame)) await CareerService.processCareersSelection(contentFrame, selectedCareer);
       
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;

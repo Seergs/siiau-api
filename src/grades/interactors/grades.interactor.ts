@@ -8,17 +8,18 @@ import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ExtraKardexData, Grade, KardexGrade } from '../entities/grade.entity';
 import { CalendarGrades } from '../entities/calendar-grades.entity';
+import { CareerSelector } from 'src/careerSelector/careerSelector';
 
 export class GradesInteractor {
   private static readonly logger = new Logger(GradesInteractor.name);
 
-  static async getStudentGradesForCurrentCalendar(page: Page) {
-    await this.navigateToRequestedPage(page, false);
+  static async getStudentGradesForCurrentCalendar(page: Page, selectedCareer: string) {
+    await this.navigateToRequestedPage(page, false, selectedCareer);
     return await this.getGradesForCurrentCalendar(page);
   }
 
   static async getStudentGradesForCalendars(calendars: string[], page: Page) {
-    await this.navigateToRequestedPage(page, true);
+    await this.navigateToRequestedPage(page, true, null);
     let grades: CalendarGrades[] = [];
     for (const calendar of calendars) {
       const gradesForCalendar = await this.getGradesForCalendar(calendar, page);
@@ -28,22 +29,23 @@ export class GradesInteractor {
   }
 
   static async getStudentGradesForAllCalendars(page: Page) {
-    await this.navigateToRequestedPage(page, true);
+    await this.navigateToRequestedPage(page, true, null);
     return await this.getGradesForAllCalendars(page);
   }
 
   static async navigateToRequestedPage(
     page: Page,
     areGradesFromKardex: boolean,
+    selectedCareer: string
   ) {
     if (areGradesFromKardex) {
       await this.navigateToKardexPage(page);
     } else {
-      await this.navigateToReportCardPage(page);
+      await this.navigateToReportCardPage(page, selectedCareer);
     }
   }
 
-  static async navigateToReportCardPage(page: Page) {
+  static async navigateToReportCardPage(page: Page, selectedCareer: string) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -51,6 +53,13 @@ export class GradesInteractor {
       await this.navigateToAcademicMenu(menuFrame);
       await page.waitForTimeout(1000);
       await this.navigateToStudentCurrentGradesMenu(menuFrame);
+
+      const contentFrame = await PuppeteerService.getFrameFromPage(
+        page,
+        'Contenido',
+      );
+
+      if(await CareerSelector.hasMoreCareers(page, contentFrame)) await CareerSelector.processCareersSelection(contentFrame, selectedCareer);
 
       await this.waitUntilRequestedPageIsLoaded(
         page,
@@ -72,8 +81,8 @@ export class GradesInteractor {
 
       await this.waitUntilRequestedPageIsLoaded(
         page,
-        constants.selectors.studentKardex.validator,
-      );
+        constants.selectors.studentKardex.validator
+        );
     } catch (e) {
       this.logger.error(e);
     }
@@ -81,12 +90,13 @@ export class GradesInteractor {
 
   private static async waitUntilRequestedPageIsLoaded(
     page: Page,
-    validator: string,
+    validator: string
   ) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
     );
+
     let isStudentGradePageLoaded = false;
     let retryCounter = 0;
     while (!isStudentGradePageLoaded && retryCounter < 5) {

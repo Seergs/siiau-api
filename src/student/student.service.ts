@@ -20,6 +20,7 @@ export class StudentService {
     studentNip: string,
     url: string,
     paramsRequested: string[],
+    selectedCareer: string
   ) {
     const page = await this.authService.login(studentCode, studentNip);
     this.analyticsService.save('student', url);
@@ -30,6 +31,7 @@ export class StudentService {
       const studentInfo = await StudentInfoInteractor.getStudentInfo(
         page,
         paramsRequested,
+        selectedCareer
       );
       await page.close();
       this.logger.log('Done getting student information');
@@ -43,6 +45,7 @@ export class StudentService {
   async getAcademicProgress(
     studentCode: string,
     studentNip: string,
+    selectedCareer: string,
     url: string,
   ) {
     const page = await this.authService.login(studentCode, studentNip);
@@ -52,7 +55,7 @@ export class StudentService {
     );
     try {
       const studentProgress =
-        await StudentProgressInteractor.getAcademicProgress(page);
+        await StudentProgressInteractor.getAcademicProgress(page, selectedCareer);
       await page.close();
       return studentProgress;
     } catch (e) {

@@ -18,6 +18,7 @@ export class GradesService {
   async getGrades(
     studentCode: string,
     studentNip: string,
+    selectedCareer: string,
     url: string,
     calendars: string[],
   ) {
@@ -30,7 +31,7 @@ export class GradesService {
       return this.getGradesForAllCalendars(page);
     }
     if (calendars.length === 1 && calendars[0] === 'current') {
-      return this.getGradesForCurrentCalendar(page);
+      return this.getGradesForCurrentCalendar(page, selectedCareer);
     }
     return this.getGradesForCalendars(calendars, page);
   }
@@ -48,10 +49,11 @@ export class GradesService {
     }
   }
 
-  async getGradesForCurrentCalendar(page: Page) {
+  async getGradesForCurrentCalendar(page: Page, selectedCareer: string) {
     try {
       const grades = await GradesInteractor.getStudentGradesForCurrentCalendar(
         page,
+        selectedCareer
       );
       await page.close();
       return grades;

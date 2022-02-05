@@ -3,16 +3,17 @@ import { Frame, Page } from 'puppeteer';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import constants from '../../constants';
 import { StudentInfo, studentInfoKeys } from '../entities/student-info-entity';
+import { CareerSelector } from '../../careerSelector/careerSelector';
 
 export class StudentInfoInteractor {
   private static readonly logger = new Logger(StudentInfoInteractor.name);
 
-  static async getStudentInfo(page: Page, paramsRequested: string[]) {
-    await this.navigateToRequestedPage(page);
+  static async getStudentInfo(page: Page, paramsRequested: string[], selectedCareer: string) {
+    await this.navigateToRequestedPage(page, selectedCareer);
     return await this.getInfo(page, paramsRequested);
   }
 
-  private static async navigateToRequestedPage(page: Page) {
+  private static async navigateToRequestedPage(page: Page, selectedCareer ) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -25,6 +26,9 @@ export class StudentInfoInteractor {
         page,
         'Contenido',
       );
+     
+      if(await CareerSelector.hasMoreCareers(page, contentFrame)) await CareerSelector.processCareersSelection(contentFrame, selectedCareer);
+      
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;
       while (!isStudentInfoPageLoaded && retryCounter < 5) {

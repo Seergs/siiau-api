@@ -10,7 +10,7 @@ export default {
     },
     home: {
       validator: 'Bienvenido al Sistema SIIAU - Escolar',
-      studentsLink: "//a[contains(., 'ALUMNOS')]",
+      studentsLink: "//a[text()= 'ALUMNOS']",
       academicLink: "//a[contains(., 'ACADÉMICA')]",
       studentInfo: "//a[contains(., 'Ficha')]",
       studentGrades: "//a[contains(., 'Boleta')]",
@@ -20,6 +20,9 @@ export default {
         "//a[contains(., 'REGISTRO') and not(contains(., 'PRERREGISTRO'))]",
       scheduleLink: "//a[contains(., 'Horario')]",
       paymentOrderLink: "//a[contains(., 'Orden De Pago')]",
+      hasMoreCareersValidator: "El alumno tiene mas de una carrera registrada. Selecciona la carrera con la que vas a trabajar.",
+      selectCareerCell: "/html/body/table/tbody/tr[{i}]/td[2]",
+      btnCareerValidator: "/html/body/table/tbody/tr[{i}]/td[8]/input"
     },
     studentInfo: {
       code: '/html/body/div[3]/table/tbody/tr[2]/td[1]',

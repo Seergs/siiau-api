@@ -1,5 +1,6 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Frame, Page } from 'puppeteer';
+import { CareerSelector } from 'src/careerSelector/careerSelector';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import {
@@ -11,8 +12,8 @@ import {
 export class StudentProgressInteractor {
   private static readonly logger = new Logger(StudentProgressInteractor.name);
 
-  static async getAcademicProgress(page: Page) {
-    await this.navigateToRequestedPage(page);
+  static async getAcademicProgress(page: Page, selectedCareer: string) {
+    await this.navigateToRequestedPage(page, selectedCareer);
     return await this.getAcademicProgressFromPage(page);
   }
 
@@ -80,7 +81,7 @@ export class StudentProgressInteractor {
     return total;
   }
 
-  private static async navigateToRequestedPage(page: Page) {
+  private static async navigateToRequestedPage(page: Page, selectedCareer: string) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -93,6 +94,9 @@ export class StudentProgressInteractor {
         page,
         'Contenido',
       );
+
+      if(await CareerSelector.hasMoreCareers(page, contentFrame)) await CareerSelector.processCareersSelection(contentFrame, selectedCareer);
+
       let isStudentInfoPageLoaded = false;
       let retryCounter = 0;
       while (!isStudentInfoPageLoaded && retryCounter < 5) {

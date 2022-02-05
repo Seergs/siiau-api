@@ -25,11 +25,13 @@ export class GradesController {
   ) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
+    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
     const calendars = query['calendar'];
     const parsedCalendars = this.parseCalendars(calendars);
     return this.gradesService.getGrades(
       studentCode,
       studentNip,
+      selectedCareer,
       request.url,
       parsedCalendars,
     );
@@ -95,5 +97,9 @@ export class GradesController {
     throw new BadRequestException(
       'Invalid calendar format, examples of possible values for calendar are: 17B, 17-B, 17 B, 2017B, 2017-B, 2017 B',
     );
+  }
+
+  private getSelectedCareer(query: string): string{
+    return query ? query.toUpperCase(): null;
   }
 }

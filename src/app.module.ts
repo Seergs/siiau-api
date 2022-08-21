@@ -11,7 +11,7 @@ import { CreditsController } from './credits/credits.controller';
 import { CreditsService } from './credits/credits.service';
 import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
-import { ScheduleModule as UserScheduleModule} from './schedule/schedule.module';
+import { ScheduleModule as UserScheduleModule } from './schedule/schedule.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DiscordModule } from './discord/discord.module';
 import { PaymentModule } from './payment/payment.module';
@@ -33,7 +33,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       ttl: 60 * 10,
     }),
     PaymentModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, CreditsController],
   providers: [

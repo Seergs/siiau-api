@@ -78,13 +78,12 @@ export class AnalyticsService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async ping() {
-    const query = "SELECT count(*) from analytics";
+    const query = 'SELECT count(*) from analytics';
     try {
-      this.logger.debug("Pinging database: " + query);
+      this.logger.debug('Pinging database: ' + query);
       await this.db.execute(query);
-    } catch(e) {
-      throw new InternalServerErrorException("Something went wrong");
+    } catch (e) {
+      throw new InternalServerErrorException('Something went wrong');
     }
-
   }
 }

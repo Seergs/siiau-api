@@ -3,6 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import * as mysql from 'mysql2/promise';
 
 @Injectable()
@@ -73,5 +74,17 @@ export class AnalyticsService {
       throw new InternalServerErrorException('Something went wrong');
     }
     return results;
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async ping() {
+    const query = "SELECT count(*) from analytics";
+    try {
+      this.logger.debug("Pinging database: " + query);
+      await this.db.execute(query);
+    } catch(e) {
+      throw new InternalServerErrorException("Something went wrong");
+    }
+
   }
 }

@@ -3,8 +3,9 @@
 **We do not store student IDs nor passwords on our servers, this is a stateless API**
 
 Api base URL:
-Primary: https://siiau-api.herokuapp.com
-Secondary: https://siiau-api.up.railway.app
+
+- Primary: https://siiau-api.herokuapp.com
+- Secondary: https://siiau-api.up.railway.app
 
 If you want to see the complete API specification, please see the [API reference](https://siiau-api.herokuapp.com/api)
 

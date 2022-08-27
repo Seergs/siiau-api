@@ -17,6 +17,7 @@ import { DiscordModule } from './discord/discord.module';
 import { PaymentModule } from './payment/payment.module';
 import { HttpCacheInterceptor } from './cache/cache.interceptor';
 import { ScheduleModule } from '@nestjs/schedule';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     PaymentModule,
     ScheduleModule.forRoot(),
   ],
-  controllers: [AppController, CreditsController],
+  controllers: [AppController, CreditsController, HealthController],
   providers: [
     AppService,
     PuppeteerService,

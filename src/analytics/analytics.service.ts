@@ -76,7 +76,7 @@ export class AnalyticsService {
     return results;
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async ping() {
     const query = 'SELECT count(*) from analytics';
     try {

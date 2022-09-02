@@ -83,7 +83,7 @@ export class AnalyticsService {
       this.logger.debug('Pinging database: ' + query);
       await this.db.execute(query);
     } catch (e) {
-      throw new InternalServerErrorException('Something went wrong');
+      throw new InternalServerErrorException('Something went wrong', e);
     }
   }
 }

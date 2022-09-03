@@ -80,10 +80,12 @@ export class AnalyticsService {
   async ping() {
     const query = 'SELECT count(*) from analytics';
     try {
-      this.logger.debug('Pinging database: ' + query);
-      await this.db.execute(query);
+      const [rows] = await this.db.execute(query);
+      this.logger.debug(
+        'Queried database: ' + query + '=' + JSON.stringify(rows[0]),
+      );
     } catch (e) {
-      throw new InternalServerErrorException('Something went wrong', e);
+      throw new InternalServerErrorException('Something went wrong' + e);
     }
   }
 }

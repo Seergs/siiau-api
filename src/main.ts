@@ -31,7 +31,7 @@ async function bootstrap() {
       PaymentModule,
     ],
   });
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('/', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
 

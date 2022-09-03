@@ -1,6 +1,4 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { StudentModule } from './student/student.module';
 import { PuppeteerService } from './puppeteer/puppeteer.service';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
@@ -36,9 +34,8 @@ import { HealthController } from './health/health.controller';
     PaymentModule,
     ScheduleModule.forRoot(),
   ],
-  controllers: [AppController, CreditsController, HealthController],
+  controllers: [CreditsController, HealthController],
   providers: [
-    AppService,
     PuppeteerService,
     CreditsService,
     {

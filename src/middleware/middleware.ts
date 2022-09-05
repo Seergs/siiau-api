@@ -18,7 +18,7 @@ export class Middleware implements NestMiddleware {
       const { statusCode } = response;
       this.logger.debug(`${method} ${originalUrl} ${statusCode}`);
 
-      if (statusCode < 300) {
+      if (statusCode < 300 && !originalUrl.includes('health')) {
         const apiRoute = originalUrl.split('/')[1];
         this.logger.debug(
           `Saving analytic: {controller=${apiRoute}, path=${originalUrl}}`,

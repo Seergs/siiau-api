@@ -1,20 +1,14 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { Page } from 'puppeteer';
-import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AuthService } from 'src/auth/auth.service';
-import { DiscordService } from 'src/discord/discord.service';
 import { GradesInteractor } from './interactors/grades.interactor';
 
 @Injectable()
 export class GradesService {
   private readonly logger = new Logger(GradesService.name);
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly analyticsService: AnalyticsService,
-    private readonly discordService: DiscordService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   async getGrades(
     request: Request,
@@ -24,12 +18,6 @@ export class GradesService {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
-    this.analyticsService.save('grades', request.url);
-    if (this.discordService.shouldSendDiscordMessage(request)) {
-      this.discordService.sendMessage(
-        'Hey! a request was made to ' + this.getGrades.name,
-      );
-    }
     if (!calendars) {
       return this.getGradesForAllCalendars(page);
     }

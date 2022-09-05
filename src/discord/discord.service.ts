@@ -14,19 +14,29 @@ export class DiscordService {
     return shouldSendMessage;
   }
 
-  async sendMessage(message: string) {
-    const environment = process.env.NODE_ENV;
-    const formattedMessage =
-      environment === 'production' ? `@everyone ${message}` : message;
+  async sendMessage(request: Request, message: string) {
+    if (this.shouldSendDiscordMessage(request)) {
+      const environment = process.env.NODE_ENV;
+      const formattedMessage =
+        environment === 'production' ? `@everyone ${message}` : message;
 
-    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content: formattedMessage }),
-    });
-    this.logger.log('Discord message sent');
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ content: formattedMessage }),
+        });
+        this.logger.log('Discord message sent');
+      } catch (e) {
+        this.logger.error(
+          'Something went wrong while sending the message: ' + e,
+        );
+      }
+    } else {
+      this.logger.debug('Api key found and matched, not sending message');
+    }
   }
 }

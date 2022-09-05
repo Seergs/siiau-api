@@ -1,4 +1,9 @@
-import { CacheModule, Module } from '@nestjs/common';
+import {
+  CacheModule,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { StudentModule } from './student/student.module';
 import { PuppeteerService } from './puppeteer/puppeteer.service';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
@@ -16,6 +21,8 @@ import { PaymentModule } from './payment/payment.module';
 import { HttpCacheInterceptor } from './cache/cache.interceptor';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthController } from './health/health.controller';
+import { Middleware } from './middleware/middleware';
+import { MiddlewareModule } from './middleware/middleware.module';
 
 @Module({
   imports: [
@@ -33,6 +40,7 @@ import { HealthController } from './health/health.controller';
     }),
     PaymentModule,
     ScheduleModule.forRoot(),
+    MiddlewareModule,
   ],
   controllers: [CreditsController, HealthController],
   providers: [
@@ -44,4 +52,8 @@ import { HealthController } from './health/health.controller';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(Middleware).forRoutes('*');
+  }
+}

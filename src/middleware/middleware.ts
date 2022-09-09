@@ -22,7 +22,9 @@ export class Middleware implements NestMiddleware {
 
       const isOkResponse = statusCode < 300;
 
-      if (isOkResponse && !this.shouldIgnorePath(originalUrl)) {
+      if (!isOkResponse || this.shouldIgnorePath(originalUrl)) {
+        this.logger.debug(`Path ${originalUrl} wont be stored as analytic`);
+      } else {
         const apiRoute = originalUrl.split('/')[1];
         this.logger.debug(
           `Saving analytic: {controller=${apiRoute}, path=${originalUrl}}`,
@@ -34,8 +36,6 @@ export class Middleware implements NestMiddleware {
           request,
           'Hey! a request was made to ' + apiRoute,
         );
-      } else {
-        this.logger.debug(`Path ${originalUrl} wont be stored as analytic`);
       }
     });
 

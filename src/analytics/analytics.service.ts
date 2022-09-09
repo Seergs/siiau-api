@@ -4,56 +4,41 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import * as mysql from 'mysql2/promise';
+import { InjectModel } from '@nestjs/sequelize';
+import { Analytic as AnalyticModel } from 'src/model/analytic.model';
 
 @Injectable()
 export class AnalyticsService {
   private readonly logger = new Logger(AnalyticsService.name);
-  private db: mysql.Connection;
-  constructor() {
-    this.initializeConnection();
-  }
-
-  async initializeConnection() {
-    this.db = await mysql.createConnection({
-      host: process.env.DATABASE_HOST,
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    });
-    await this.db.connect();
-  }
+  constructor(
+    @InjectModel(AnalyticModel) private Analytic: typeof AnalyticModel,
+  ) {}
 
   async save(controller: string, path: string) {
-    const query = `INSERT INTO analytics(controller, path, date) VALUES('{1}','{2}', NOW())`;
-    const statement = query.replace('{1}', controller).replace('{2}', path);
     try {
-      await this.db.execute(statement);
+      await this.Analytic.create({
+        controller,
+        path,
+      });
       this.logger.debug('analytics saved');
     } catch (e) {
-      throw new InternalServerErrorException('Something went wrong');
+      throw new InternalServerErrorException('Something went wrong: ' + e);
     }
   }
 
   async getAll() {
-    const query = 'SELECT * from analytics';
     try {
-      const [rows] = await this.db.execute(query);
-      return rows;
+      return await this.Analytic.findAll();
     } catch (e) {
-      throw new InternalServerErrorException('Something went wrong');
+      throw new InternalServerErrorException('Something went wrong: ' + e);
     }
   }
 
   async getSummary() {
     const results = {};
-    const query = 'SELECT * from analytics';
     try {
-      const [rows] = await this.db.execute(query);
-      for (const row of rows as mysql.RowDataPacket[]) {
+      const analytics = await this.getAll();
+      for (const row of analytics) {
         const removedQueryParamsPath = row.path.substring(
           0,
           row.path.indexOf('?'),
@@ -71,19 +56,16 @@ export class AnalyticsService {
         }
       }
     } catch (e) {
-      throw new InternalServerErrorException('Something went wrong');
+      throw new InternalServerErrorException('Something went wrong: ' + e);
     }
     return results;
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async ping() {
-    const query = 'SELECT count(*) from analytics';
     try {
-      const [rows] = await this.db.execute(query);
-      this.logger.debug(
-        'Queried database: ' + query + '=' + JSON.stringify(rows[0]),
-      );
+      const count = await this.Analytic.count();
+      this.logger.debug('Queried database = ' + count);
     } catch (e) {
       throw new InternalServerErrorException('Something went wrong' + e);
     }

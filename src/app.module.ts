@@ -23,6 +23,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HealthController } from './health/health.controller';
 import { Middleware } from './middleware/middleware';
 import { MiddlewareModule } from './middleware/middleware.module';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { Analytic } from './model/analytic.model';
+import { config } from 'dotenv';
+
+config();
 
 @Module({
   imports: [
@@ -41,6 +46,19 @@ import { MiddlewareModule } from './middleware/middleware.module';
     PaymentModule,
     ScheduleModule.forRoot(),
     MiddlewareModule,
+    SequelizeModule.forRoot({
+      dialect: 'mysql',
+      host: process.env.DATABASE_HOST,
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      models: [Analytic],
+      dialectOptions: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
+    }),
   ],
   controllers: [CreditsController, HealthController],
   providers: [

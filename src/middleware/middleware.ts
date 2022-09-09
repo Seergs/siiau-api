@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from 'express';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { DiscordService } from '../discord/discord.service';
 
+const ignoredPaths = ['health', 'database'];
+
 @Injectable()
 export class Middleware implements NestMiddleware {
   private logger = new Logger('HTTP');
@@ -18,7 +20,11 @@ export class Middleware implements NestMiddleware {
       const { statusCode } = response;
       this.logger.debug(`${method} ${originalUrl} ${statusCode}`);
 
-      if (statusCode < 300 && !originalUrl.includes('health')) {
+      const isOkResponse = statusCode < 300;
+
+      if (!isOkResponse || this.shouldIgnorePath(originalUrl)) {
+        this.logger.debug(`Path ${originalUrl} wont be stored as analytic`);
+      } else {
         const apiRoute = originalUrl.split('/')[1];
         this.logger.debug(
           `Saving analytic: {controller=${apiRoute}, path=${originalUrl}}`,
@@ -34,5 +40,9 @@ export class Middleware implements NestMiddleware {
     });
 
     next();
+  }
+
+  shouldIgnorePath(url: string) {
+    return ignoredPaths.some((v) => url.includes(v));
   }
 }

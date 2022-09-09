@@ -2,14 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
-import { config } from 'dotenv';
 import { StudentModule } from './student/student.module';
 import { GradesModule } from './grades/grades.module';
 import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { PaymentModule } from './payment/payment.module';
-config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

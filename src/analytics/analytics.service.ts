@@ -61,7 +61,7 @@ export class AnalyticsService {
     return results;
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async ping() {
     try {
       const count = await this.Analytic.count();

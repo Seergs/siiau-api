@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectModel } from '@nestjs/sequelize';
 import { Analytic as AnalyticModel } from 'src/model/analytic.model';
 
@@ -59,15 +58,5 @@ export class AnalyticsService {
       throw new InternalServerErrorException('Something went wrong: ' + e);
     }
     return results;
-  }
-
-  @Cron(CronExpression.EVERY_10_MINUTES)
-  async ping() {
-    try {
-      const count = await this.Analytic.count();
-      this.logger.debug('Queried database = ' + count);
-    } catch (e) {
-      throw new InternalServerErrorException('Something went wrong' + e);
-    }
   }
 }

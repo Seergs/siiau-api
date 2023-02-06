@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req } from '@nestjs/common';
+import { Controller, Get, Logger, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiTags, ApiHeaders, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { studentInfoKeys } from './entities/student-info-entity';
@@ -17,6 +17,7 @@ import {
 @ApiTags('student')
 @Controller('student')
 export class StudentController {
+  private readonly logger = new Logger('StudentController');
   constructor(private readonly studentService: StudentService) {}
 
   @Get()
@@ -29,11 +30,13 @@ export class StudentController {
   ) {
     const paramsRequested = this.parseStudentInfoQuery(query['query']);
     const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
-    return await this.studentService.getStudent(
+    const response = await this.studentService.getStudent(
       request,
       paramsRequested,
       selectedCareer,
     );
+    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    return response;
   }
 
   @Get('/progress')
@@ -44,7 +47,12 @@ export class StudentController {
     @Query() query: Record<string, any>,
   ) {
     const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
-    return this.studentService.getAcademicProgress(request, selectedCareer);
+    const response = await this.studentService.getAcademicProgress(
+      request,
+      selectedCareer,
+    );
+    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    return response;
   }
 
   @ApiResponse(LoginResponseOk)

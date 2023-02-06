@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   Get,
+  Logger,
   Query,
   Req,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { RootResponse, RootHeaders, RootQuery } from './swagger';
 @ApiTags('grades')
 @Controller(['grades', 'kardex'])
 export class GradesController {
+  private readonly logger = new Logger('GradesController');
   constructor(private readonly gradesService: GradesService) {}
 
   @ApiResponse(RootResponse)
@@ -26,11 +28,13 @@ export class GradesController {
     const calendars = query['calendar'];
     const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
     const parsedCalendars = this.parseCalendars(calendars);
-    return this.gradesService.getGrades(
+    const response = await this.gradesService.getGrades(
       request,
       parsedCalendars,
       selectedCareer,
     );
+    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    return response;
   }
 
   private parseCalendars(receivedCalendars: string) {

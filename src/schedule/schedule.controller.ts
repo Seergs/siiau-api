@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Controller,
   Get,
+  Logger,
   Query,
   Req,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 @ApiTags('schedule')
 @Controller('schedule')
 export class ScheduleController {
+  private readonly logger = new Logger('ScheduleController');
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @ApiResponse(RootResponse)
@@ -25,7 +27,12 @@ export class ScheduleController {
   ) {
     const calendar = query['calendar'];
     const parsedCalendar = this.parseCalendar(calendar);
-    return this.scheduleService.getSchedule(request, parsedCalendar);
+    const response = await this.scheduleService.getSchedule(
+      request,
+      parsedCalendar,
+    );
+    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    return response;
   }
 
   private parseCalendar(receivedCalendar: string) {

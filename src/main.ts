@@ -8,10 +8,19 @@ import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { PaymentModule } from './payment/payment.module';
+import * as Sentry from '@sentry/node';
+import { SentryInterceptor } from './interceptors/sentry.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+  });
+
   app.enableCors();
+  app.useGlobalInterceptors(new SentryInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('SIIAU API')

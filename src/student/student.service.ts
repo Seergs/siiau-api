@@ -3,6 +3,7 @@ import { StudentInfoInteractor } from './interactors/student-info-interactor';
 import { StudentProgressInteractor } from './interactors/student-progress-interactor';
 import { AuthService } from 'src/auth/auth.service';
 import { Request } from 'express';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class StudentService {
@@ -29,6 +30,7 @@ export class StudentService {
       return studentInfo;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student information';
     }
   }
@@ -47,6 +49,7 @@ export class StudentService {
       return studentProgress;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student progress';
     }
   }

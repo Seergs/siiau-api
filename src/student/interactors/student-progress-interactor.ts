@@ -8,6 +8,7 @@ import {
   StudentProgressResponse,
   StudentProgressTotal,
 } from '../entities/student-progress-entity';
+import * as Sentry from '@sentry/node';
 
 export class StudentProgressInteractor {
   private static readonly logger = new Logger(StudentProgressInteractor.name);
@@ -132,6 +133,7 @@ export class StudentProgressInteractor {
       }
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

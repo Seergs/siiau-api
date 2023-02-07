@@ -3,6 +3,7 @@ import { Frame, Page } from 'puppeteer';
 import constants from '../../constants';
 import { PuppeteerService } from '../../puppeteer/puppeteer.service';
 import { Admission } from '../entities/admission.entity';
+import * as Sentry from '@sentry/node';
 
 export class AdmissionInteractor {
   private static readonly logger = new Logger(AdmissionInteractor.name);
@@ -25,6 +26,7 @@ export class AdmissionInteractor {
       );
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

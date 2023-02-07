@@ -4,6 +4,7 @@ import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import constants from '../../constants';
 import { StudentInfo, studentInfoKeys } from '../entities/student-info-entity';
 import { CareerService } from 'src/career/career.service';
+import * as Sentry from '@sentry/node';
 
 export class StudentInfoInteractor {
   private static readonly logger = new Logger(StudentInfoInteractor.name);
@@ -65,6 +66,7 @@ export class StudentInfoInteractor {
       }
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

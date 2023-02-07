@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
 import { Request } from 'express';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class AdmissionService {
@@ -18,6 +19,7 @@ export class AdmissionService {
       return admission;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student admission information';
     }
   }

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { PaymentInteractor } from './interactors/payment.interactor';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class PaymentService {
@@ -18,6 +19,7 @@ export class PaymentService {
       return paymentOrder;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student payment order';
     }
   }

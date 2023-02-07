@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { Page } from 'puppeteer';
 import { AuthService } from 'src/auth/auth.service';
 import { ScheduleInteractor } from './interactors/schedule.interactor';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class ScheduleService {
@@ -29,6 +30,7 @@ export class ScheduleService {
       return schedule;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student schedule for current calendar';
     }
   }
@@ -44,6 +46,7 @@ export class ScheduleService {
     } catch (e) {
       this.logger.error(e);
       if (e instanceof BadRequestException) throw e;
+      Sentry.captureException(e);
       return (
         'Something went wrong getting the student schedule for calendars ' +
         calendar

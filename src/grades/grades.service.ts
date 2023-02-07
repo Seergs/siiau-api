@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { Page } from 'puppeteer';
 import { AuthService } from 'src/auth/auth.service';
 import { GradesInteractor } from './interactors/grades.interactor';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class GradesService {
@@ -36,6 +37,7 @@ export class GradesService {
       return grades;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student grades all calendars';
     }
   }
@@ -50,6 +52,7 @@ export class GradesService {
       return grades;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting the student grades for current calendar';
     }
   }
@@ -65,6 +68,7 @@ export class GradesService {
     } catch (e) {
       this.logger.error(e);
       if (e instanceof BadRequestException) throw e;
+      Sentry.captureException(e);
       return (
         'Something went wrong getting the student grades for calendars ' +
         calendars

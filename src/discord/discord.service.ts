@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import fetch from 'node-fetch';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class DiscordService {
@@ -34,6 +35,7 @@ export class DiscordService {
         this.logger.error(
           'Something went wrong while sending the message: ' + e,
         );
+        Sentry.captureException(e);
       }
     } else {
       this.logger.debug('Api key found and matched, not sending message');

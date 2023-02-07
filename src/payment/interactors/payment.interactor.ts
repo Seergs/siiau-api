@@ -3,6 +3,7 @@ import { Frame, Page } from 'puppeteer';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { Payment, PaymentResponse } from '../entities/payment.entity';
+import * as Sentry from '@sentry/node';
 
 export class PaymentInteractor {
   private static readonly logger = new Logger(PaymentInteractor.name);
@@ -25,6 +26,7 @@ export class PaymentInteractor {
       );
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

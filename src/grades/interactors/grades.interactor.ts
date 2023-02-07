@@ -9,6 +9,7 @@ import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ExtraKardexData, Grade, KardexGrade } from '../entities/grade.entity';
 import { CalendarGrades } from '../entities/calendar-grades.entity';
 import { CareerService } from 'src/career/career.service';
+import * as Sentry from '@sentry/node';
 
 export class GradesInteractor {
   private static readonly logger = new Logger(GradesInteractor.name);
@@ -74,6 +75,7 @@ export class GradesInteractor {
       );
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 
@@ -92,6 +94,7 @@ export class GradesInteractor {
       );
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 
@@ -360,6 +363,7 @@ export class GradesInteractor {
       receivedGrade.extra['date'] = await date.evaluate((e) => e.textContent);
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

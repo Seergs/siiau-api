@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { CreditsInteractor } from './interactors/credits.interactor';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class CreditsService {
@@ -19,6 +20,7 @@ export class CreditsService {
       return credits;
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
       return 'Something went wrong getting credits';
     }
   }

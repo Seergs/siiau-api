@@ -3,6 +3,7 @@ import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { AreaCredits, Credits } from '../entities/credits.entity';
+import * as Sentry from '@sentry/node';
 
 export class CreditsInteractor {
   private static readonly logger = new Logger(CreditsInteractor.name);
@@ -95,7 +96,9 @@ export class CreditsInteractor {
 
           const text = await cell.evaluate((c) => c.textContent.trim());
           values.push(text);
-        } catch (e) {}
+        } catch (e) {
+          Sentry.captureException(e);
+        }
       }
       const row = this.parseRow(values);
       if (i === 5) {
@@ -140,6 +143,7 @@ export class CreditsInteractor {
       );
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

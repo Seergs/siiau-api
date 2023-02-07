@@ -7,6 +7,7 @@ import { Frame, Page } from 'puppeteer';
 import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { Schedule, SubjectSchedule } from '../entities/schedule.entity';
+import * as Sentry from '@sentry/node';
 
 export class ScheduleInteractor {
   private static readonly logger = new Logger(ScheduleInteractor.name);
@@ -38,6 +39,7 @@ export class ScheduleInteractor {
         constants.selectors.studentSchedule.validator,
       );
     } catch (e) {
+      Sentry.captureException(e);
       this.logger.error(e);
     }
   }
@@ -231,6 +233,7 @@ export class ScheduleInteractor {
       receivedSubjectSchedule.schedules.push(schedule);
     } catch (e) {
       this.logger.error(e);
+      Sentry.captureException(e);
     }
   }
 

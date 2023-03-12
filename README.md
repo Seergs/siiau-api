@@ -28,3 +28,5 @@ Note: For every request you need to send headers `x-student-code` and `x-student
 - New requests take a long time to complete since we are doing scrapping to get the data. If a request is made again to the same endpoint with the same input (studentCode, studentNip, same query params, etc) then the request will finish instantly since we are caching responses for 10 minutes.
 - Schedule endpoint fails when schedule dropdown has not options.
 - ~~Currently if the user has multiple careers in SIIAU, some functionality will fail, like the retrieval of the grades and the general student information.~~ **Fixed**
+
+If you find any bug or problem, please raise a GitHub issue and I will take a look.

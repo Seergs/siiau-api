@@ -2,38 +2,36 @@ import { Test } from '@nestjs/testing';
 import { AdmissionController } from '../admission.controller';
 import { AdmissionService } from '../admission.service';
 
+class AdmissionServiceMock {
+  getAdmissionInformation() {
+    return 'Admission information';
+  }
+}
+
 describe('AdmissionController', () => {
   let admissionController: AdmissionController;
-  let admissionService: AdmissionService;
-  const req: any = {
-    headers: {
-      'x-student-code': '2177584987',
-      'x-student-nip': 'password',
-    },
-  };
-
   beforeAll(async () => {
     const ApiServiceProvider = {
       provide: AdmissionService,
-      useFactory: () => ({
-        getAdmissionInformation: jest.fn(() => []),
-      }),
+      useClass: AdmissionServiceMock,
     };
 
     const moduleRef = await Test.createTestingModule({
       controllers: [AdmissionController],
-      providers: [AdmissionService, ApiServiceProvider],
+      providers: [ApiServiceProvider],
     }).compile();
-    admissionService = moduleRef.get<AdmissionService>(AdmissionService);
     admissionController =
       moduleRef.get<AdmissionController>(AdmissionController);
   });
 
-  it('getAdmissionInformation', () => {
-    expect(admissionController.getAdmissionInfo(req)).not.toEqual(null);
+  it('should be defined', () => {
+    expect(admissionController).toBeDefined();
   });
-  it('getAdmissionInformation', () => {
-    admissionController.getAdmissionInfo(req);
-    expect(admissionService.getAdmissionInformation).toHaveBeenCalled();
+
+  describe('getAdmissionInformation', () => {
+    it('should return admission information', async () => {
+      const result = await admissionController.getAdmissionInfo({} as any);
+      expect(result).toEqual('Admission information');
+    });
   });
 });

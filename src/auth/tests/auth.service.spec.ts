@@ -3,7 +3,7 @@ import constants from 'src/constants';
 import { PuppeteerModule } from 'src/puppeteer/puppeteer.module';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { AuthService } from '../auth.service';
-import {AlertsModule} from 'src/alerts/alerts.module'
+import { AlertsModule } from 'src/alerts/alerts.module';
 
 class PuppeteerMock {
   setUpInitialPage() {

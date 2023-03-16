@@ -10,15 +10,11 @@ import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class SentryInterceptor implements NestInterceptor {
-
-  intercept( context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next
-      .handle()
-      .pipe(
-        tap(null, (exception) => {
-          Sentry.captureException(exception);
-        }),
-      );
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    return next.handle().pipe(
+      tap(null, (exception) => {
+        Sentry.captureException(exception);
+      }),
+    );
   }
-
 }

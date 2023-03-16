@@ -5,13 +5,19 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Page } from 'puppeteer';
+import { AlertService } from 'src/alerts/alerts.service';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  constructor(private readonly puppeteerService: PuppeteerService) {}
+
+  constructor(
+    private readonly puppeteerService: PuppeteerService,
+    private readonly alerts: AlertService,
+  ) {}
+
   async login(studentCode: string, studentNip: string): Promise<Page> {
     if (!studentCode || !studentNip)
       throw new BadRequestException('Missing auth headers');
@@ -44,10 +50,15 @@ export class AuthService {
       ) {
         return page;
       } else {
+        await this.alerts.sendErrorAlert(
+          page,
+          new UnauthorizedException('Login failed'),
+        );
         throw new UnauthorizedException('Invalid credentials');
       }
     } catch (e) {
       this.logger.error(e);
+      await this.alerts.sendErrorAlert(page, e);
       throw new UnauthorizedException('Invalid credentials');
     }
   }

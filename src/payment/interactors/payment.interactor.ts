@@ -1,19 +1,26 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Frame, Page } from 'puppeteer';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { Payment, PaymentResponse } from '../entities/payment.entity';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
+@Injectable()
 export class PaymentInteractor {
-  private static readonly logger = new Logger(PaymentInteractor.name);
+  private readonly logger = new Logger(PaymentInteractor.name);
 
-  static async getPaymentOrder(page: Page) {
+  constructor(private readonly alerts: AlertService) {}
+
+  async getPaymentOrder(page: Page) {
     await this.navigateToRequestedPage(page);
     return this.getPaymentOrderFromPage(page);
   }
 
-  static async navigateToRequestedPage(page: Page) {
+  async navigateToRequestedPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -26,14 +33,11 @@ export class PaymentInteractor {
       );
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async waitUntilRequestedPageIsLoaded(
-    page: Page,
-    validator: string,
-  ) {
+  private async waitUntilRequestedPageIsLoaded(page: Page, validator: string) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -62,21 +66,21 @@ export class PaymentInteractor {
     }
   }
 
-  private static async navigateToPaymentOrderMenu(workingFrame: Frame) {
+  private async navigateToPaymentOrderMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.paymentOrderLink,
     );
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async getPaymentOrderFromPage(page: Page) {
+  private async getPaymentOrderFromPage(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
     const payments: Payment[] = [];

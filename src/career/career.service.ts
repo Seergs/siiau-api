@@ -16,12 +16,14 @@ export class CareerService {
       if (
         contetStr.includes(constants.selectors.home.hasMoreCareersValidator)
       ) {
+        this.logger.log('The student has more than one career');
         return true;
       } else {
         tries++;
       }
     }
 
+    this.logger.log('The student has only one career');
     return false;
   }
 

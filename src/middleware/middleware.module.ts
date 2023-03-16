@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AnalyticsModule } from '../analytics/analytics.module';
-import { DiscordModule } from '../discord/discord.module';
+import { AlertsModule } from '../alerts/alerts.module';
 
 @Module({
-  imports: [AnalyticsModule, DiscordModule],
+  imports: [AnalyticsModule, AlertsModule],
 })
 export class MiddlewareModule {}

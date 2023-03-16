@@ -16,7 +16,7 @@ import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
 import { ScheduleModule as UserScheduleModule } from './schedule/schedule.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { DiscordModule } from './discord/discord.module';
+import { AlertsModule } from './alerts/alerts.module';
 import { PaymentModule } from './payment/payment.module';
 import { HttpCacheInterceptor } from './cache/cache.interceptor';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -39,7 +39,7 @@ config();
     CreditsModule,
     AdmissionModule,
     UserScheduleModule,
-    DiscordModule,
+    AlertsModule,
     CacheModule.register({
       ttl: 60 * 10,
     }),
@@ -52,6 +52,7 @@ config();
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
+      logging: false,
       models: [Analytic],
       dialectOptions: {
         ssl: {

@@ -2,25 +2,31 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
 import { Request } from 'express';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
 @Injectable()
 export class AdmissionService {
   private readonly logger = new Logger(AdmissionService.name);
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly alerts: AlertService,
+  ) {}
 
   async getAdmissionInformation(request: Request) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
     try {
-      const admission = await AdmissionInteractor.getAdmissionInformation(page);
-      await page.close();
-      return admission;
+      const interactor = new AdmissionInteractor(this.alerts);
+      return await interactor.getAdmissionInformation(page);
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
       return 'Something went wrong getting the student admission information';
+    } finally {
+      if (!page.isClosed()) {
+        await page.close();
+      }
     }
   }
 }

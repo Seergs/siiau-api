@@ -1,15 +1,22 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Frame, Page } from 'puppeteer';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import constants from '../../constants';
 import { StudentInfo, studentInfoKeys } from '../entities/student-info-entity';
 import { CareerService } from 'src/career/career.service';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
+@Injectable()
 export class StudentInfoInteractor {
-  private static readonly logger = new Logger(StudentInfoInteractor.name);
+  private readonly logger = new Logger(StudentInfoInteractor.name);
 
-  static async getStudentInfo(
+  constructor(private readonly alerts: AlertService) {}
+
+  async getStudentInfo(
     page: Page,
     paramsRequested: string[],
     selectedCareer: string,
@@ -18,7 +25,7 @@ export class StudentInfoInteractor {
     return await this.getInfo(page, paramsRequested);
   }
 
-  private static async navigateToRequestedPage(page: Page, selectedCareer) {
+  private async navigateToRequestedPage(page: Page, selectedCareer: string) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -66,32 +73,32 @@ export class StudentInfoInteractor {
       }
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async navigateToAcademicMenu(workingFrame: Frame) {
+  private async navigateToAcademicMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.academicLink,
     );
   }
 
-  private static async navigateToStudentInfoMenu(workingFrame: Frame) {
+  private async navigateToStudentInfoMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentInfo,
     );
   }
 
-  private static async getInfo(page: Page, paramsRequested: string[]) {
+  private async getInfo(page: Page, paramsRequested: string[]) {
     const student = new StudentInfo();
     const totalParams = studentInfoKeys;
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
@@ -108,7 +115,7 @@ export class StudentInfoInteractor {
     return student;
   }
 
-  private static filterUnrequestedParams(
+  private filterUnrequestedParams(
     preResponse: StudentInfo,
     paramsRequested: string[],
   ) {

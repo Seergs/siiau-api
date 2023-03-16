@@ -1,7 +1,7 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { DiscordService } from '../discord/discord.service';
+import { AlertService } from '../alerts/alerts.service';
 
 const ignoredPaths = ['health', 'database'];
 
@@ -11,7 +11,7 @@ export class Middleware implements NestMiddleware {
 
   constructor(
     private readonly analyticsService: AnalyticsService,
-    private readonly discordService: DiscordService,
+    private readonly alertService: AlertService,
   ) {}
 
   use(request: Request, response: Response, next: NextFunction) {
@@ -32,7 +32,7 @@ export class Middleware implements NestMiddleware {
         this.analyticsService.save(apiRoute, originalUrl);
 
         this.logger.debug('Sending discord message');
-        this.discordService.sendMessage(
+        this.alertService.sendUsageAlert(
           request,
           'Hey! a request was made to ' + apiRoute,
         );

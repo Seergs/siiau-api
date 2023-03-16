@@ -1,4 +1,8 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Frame, Page } from 'puppeteer';
 import { CareerService } from 'src/career/career.service';
 import constants from 'src/constants';
@@ -8,17 +12,20 @@ import {
   StudentProgressResponse,
   StudentProgressTotal,
 } from '../entities/student-progress-entity';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
+@Injectable()
 export class StudentProgressInteractor {
-  private static readonly logger = new Logger(StudentProgressInteractor.name);
+  private readonly logger = new Logger(StudentProgressInteractor.name);
 
-  static async getAcademicProgress(page: Page, selectedCareer: string) {
+  constructor(private readonly alerts: AlertService) {}
+
+  async getAcademicProgress(page: Page, selectedCareer: string) {
     await this.navigateToRequestedPage(page, selectedCareer);
     return await this.getAcademicProgressFromPage(page);
   }
 
-  private static async getAcademicProgressFromPage(
+  private async getAcademicProgressFromPage(
     page: Page,
   ): Promise<StudentProgressResponse> {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
@@ -61,7 +68,7 @@ export class StudentProgressInteractor {
     return new StudentProgressResponse({ semesters: calendars, total });
   }
 
-  private static async getAcademicProgressTotal(frame: Frame, i: number) {
+  private async getAcademicProgressTotal(frame: Frame, i: number) {
     const total = new StudentProgressTotal();
     const NUMBER_OF_COLUMNS = 8;
     const START_COLUMN = 6;
@@ -82,10 +89,7 @@ export class StudentProgressInteractor {
     return total;
   }
 
-  private static async navigateToRequestedPage(
-    page: Page,
-    selectedCareer: string,
-  ) {
+  private async navigateToRequestedPage(page: Page, selectedCareer: string) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -133,25 +137,25 @@ export class StudentProgressInteractor {
       }
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async navigateToAcademicMenu(workingFrame: Frame) {
+  private async navigateToAcademicMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.academicLink,
     );
   }
 
-  private static async navigateToStudentInfoMenu(workingFrame: Frame) {
+  private async navigateToStudentInfoMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentInfo,

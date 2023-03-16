@@ -2,12 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import fetch from 'node-fetch';
 import * as Sentry from '@sentry/node';
+import { Page } from 'puppeteer';
 
 @Injectable()
-export class DiscordService {
-  private readonly logger = new Logger(DiscordService.name);
+export class AlertService {
+  private readonly logger = new Logger(AlertService.name);
 
-  shouldSendDiscordMessage(request: Request): boolean {
+  shouldSendUsageAlert(request: Request): boolean {
     const apiKey = request.headers['x-api-key'];
     const shouldSendMessage = !apiKey || apiKey !== process.env.API_KEY;
 
@@ -15,8 +16,8 @@ export class DiscordService {
     return shouldSendMessage;
   }
 
-  async sendMessage(request: Request, message: string) {
-    if (this.shouldSendDiscordMessage(request)) {
+  async sendUsageAlert(request: Request, message: string) {
+    if (this.shouldSendUsageAlert(request)) {
       const environment = process.env.NODE_ENV;
       const formattedMessage =
         environment === 'production' ? `@everyone ${message}` : message;
@@ -40,5 +41,18 @@ export class DiscordService {
     } else {
       this.logger.debug('Api key found and matched, not sending message');
     }
+  }
+
+  async sendErrorAlert(page: Page, e: Error) {
+    const screenshot = await page.screenshot({ fullPage: true });
+    Sentry.configureScope((s) => {
+      const attachment = {
+        data: screenshot,
+        filename: 'screenshot.png',
+        contentType: 'image/png',
+      };
+      s.addAttachment(attachment);
+    });
+    Sentry.captureException(e);
   }
 }

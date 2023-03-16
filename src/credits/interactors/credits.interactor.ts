@@ -1,19 +1,27 @@
 import { Frame, Page } from 'puppeteer';
 import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { AreaCredits, Credits } from '../entities/credits.entity';
+import { AlertService } from 'src/alerts/alerts.service';
 import * as Sentry from '@sentry/node';
 
+@Injectable()
 export class CreditsInteractor {
-  private static readonly logger = new Logger(CreditsInteractor.name);
+  private readonly logger = new Logger(CreditsInteractor.name);
 
-  static async getCredits(page: Page) {
+  constructor(private readonly alerts: AlertService) {}
+
+  async getCredits(page: Page) {
     await this.navigateToKardexPage(page);
     return await this.getCreditsFromPage(page);
   }
 
-  static async getCreditsFromPage(page: Page) {
+  async getCreditsFromPage(page: Page) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -41,7 +49,7 @@ export class CreditsInteractor {
     return credits;
   }
 
-  static async getSummaryCreditsFromFrame(frame: Frame) {
+  async getSummaryCreditsFromFrame(frame: Frame) {
     const requiredSelector = constants.selectors.credits.summary.required;
     const requiredCredits = await PuppeteerService.getElementFromWrapper(
       frame,
@@ -65,7 +73,7 @@ export class CreditsInteractor {
     };
   }
 
-  static async getDetailedCredits(frame: Frame) {
+  async getDetailedCredits(frame: Frame) {
     const credits: {
       mandatorySpecialized?: AreaCredits;
       selectiveSpecialized?: AreaCredits;
@@ -120,7 +128,7 @@ export class CreditsInteractor {
     return credits;
   }
 
-  static parseRow(values: string[]) {
+  parseRow(values: string[]) {
     return new AreaCredits({
       required: values[0],
       aquired: values[1],
@@ -128,7 +136,7 @@ export class CreditsInteractor {
     });
   }
 
-  static async navigateToKardexPage(page: Page) {
+  async navigateToKardexPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -143,14 +151,11 @@ export class CreditsInteractor {
       );
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async waitUntilRequestedPageIsLoaded(
-    page: Page,
-    validator: string,
-  ) {
+  private async waitUntilRequestedPageIsLoaded(page: Page, validator: string) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -179,21 +184,21 @@ export class CreditsInteractor {
     }
   }
 
-  private static async navigateToKardexMenu(workingFrame: Frame) {
+  private async navigateToKardexMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentKardex,
     );
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async navigateToAcademicMenu(workingFrame: Frame) {
+  private async navigateToAcademicMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.academicLink,

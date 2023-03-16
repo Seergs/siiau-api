@@ -3,6 +3,7 @@ import constants from 'src/constants';
 import { PuppeteerModule } from 'src/puppeteer/puppeteer.module';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { AuthService } from '../auth.service';
+import {AlertsModule} from 'src/alerts/alerts.module'
 
 class PuppeteerMock {
   setUpInitialPage() {
@@ -33,7 +34,7 @@ describe.only('AuthService', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [AuthService],
-      imports: [PuppeteerModule],
+      imports: [PuppeteerModule, AlertsModule],
     })
       .overrideProvider(PuppeteerService)
       .useClass(PuppeteerMock)

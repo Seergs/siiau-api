@@ -3,13 +3,16 @@ import { StudentInfoInteractor } from './interactors/student-info-interactor';
 import { StudentProgressInteractor } from './interactors/student-progress-interactor';
 import { AuthService } from 'src/auth/auth.service';
 import { Request } from 'express';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
 @Injectable()
 export class StudentService {
   private readonly logger = new Logger(StudentService.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly alerts: AlertService,
+  ) {}
 
   async getStudent(
     request: Request,
@@ -20,37 +23,38 @@ export class StudentService {
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
     try {
-      const studentInfo = await StudentInfoInteractor.getStudentInfo(
+      const interactor = new StudentInfoInteractor(this.alerts);
+      return await interactor.getStudentInfo(
         page,
         paramsRequested,
         selectedCareer,
       );
-      await page.close();
-      this.logger.log('Done getting student information');
-      return studentInfo;
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
       return 'Something went wrong getting the student information';
+    } finally {
+      if (!page.isClosed()) {
+        await page.close();
+      }
     }
   }
 
-  async getAcademicProgress(request: Request, selectedCareer) {
+  async getAcademicProgress(request: Request, selectedCareer: string) {
     const studentCode = request.headers['x-student-code'] as string;
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
     try {
-      const studentProgress =
-        await StudentProgressInteractor.getAcademicProgress(
-          page,
-          selectedCareer,
-        );
-      await page.close();
-      return studentProgress;
+      const interactor = new StudentProgressInteractor(this.alerts);
+      return await interactor.getAcademicProgress(page, selectedCareer);
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
       return 'Something went wrong getting the student progress';
+    } finally {
+      if (!page.isClosed()) {
+        await page.close();
+      }
     }
   }
 

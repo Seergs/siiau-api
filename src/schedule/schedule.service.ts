@@ -3,13 +3,16 @@ import { Request } from 'express';
 import { Page } from 'puppeteer';
 import { AuthService } from 'src/auth/auth.service';
 import { ScheduleInteractor } from './interactors/schedule.interactor';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
 @Injectable()
 export class ScheduleService {
   private readonly logger = new Logger(ScheduleService.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly alerts: AlertService,
+  ) {}
 
   async getSchedule(request: Request, calendar: string) {
     const studentCode = request.headers['x-student-code'] as string;
@@ -23,34 +26,35 @@ export class ScheduleService {
 
   async getCurrentSchedule(page: Page) {
     try {
-      const schedule = await ScheduleInteractor.getScheduleForCurrentCalendar(
-        page,
-      );
-      await page.close();
-      return schedule;
+      const interactor = new ScheduleInteractor(this.alerts);
+      return await interactor.getScheduleForCurrentCalendar(page);
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
       return 'Something went wrong getting the student schedule for current calendar';
+    } finally {
+      if (!page.isClosed()) {
+        await page.close();
+      }
     }
   }
 
   async getScheduleForCalendar(calendar: string, page: Page) {
     try {
-      const schedule = await ScheduleInteractor.getScheduleForCalendar(
-        calendar,
-        page,
-      );
-      await page.close();
-      return schedule;
+      const interactor = new ScheduleInteractor(this.alerts);
+      return await interactor.getScheduleForCalendar(calendar, page);
     } catch (e) {
       this.logger.error(e);
       if (e instanceof BadRequestException) throw e;
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
       return (
         'Something went wrong getting the student schedule for calendars ' +
         calendar
       );
+    } finally {
+      if (!page.isClosed()) {
+        await page.close();
+      }
     }
   }
 }

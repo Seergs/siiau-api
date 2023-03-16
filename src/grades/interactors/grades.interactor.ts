@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Injectable,
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
@@ -10,19 +11,20 @@ import { ExtraKardexData, Grade, KardexGrade } from '../entities/grade.entity';
 import { CalendarGrades } from '../entities/calendar-grades.entity';
 import { CareerService } from 'src/career/career.service';
 import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
+@Injectable()
 export class GradesInteractor {
-  private static readonly logger = new Logger(GradesInteractor.name);
+  private readonly logger = new Logger(GradesInteractor.name);
 
-  static async getStudentGradesForCurrentCalendar(
-    page: Page,
-    selectedCareer: string,
-  ) {
+  constructor(private readonly alerts: AlertService) {}
+
+  async getStudentGradesForCurrentCalendar(page: Page, selectedCareer: string) {
     await this.navigateToRequestedPage(page, false, selectedCareer);
     return await this.getGradesForCurrentCalendar(page);
   }
 
-  static async getStudentGradesForCalendars(calendars: string[], page: Page) {
+  async getStudentGradesForCalendars(calendars: string[], page: Page) {
     await this.navigateToRequestedPage(page, true, null);
     const grades: CalendarGrades[] = [];
     for (const calendar of calendars) {
@@ -32,12 +34,12 @@ export class GradesInteractor {
     return grades;
   }
 
-  static async getStudentGradesForAllCalendars(page: Page) {
+  async getStudentGradesForAllCalendars(page: Page) {
     await this.navigateToRequestedPage(page, true, null);
     return await this.getGradesForAllCalendars(page);
   }
 
-  static async navigateToRequestedPage(
+  async navigateToRequestedPage(
     page: Page,
     areGradesFromKardex: boolean,
     selectedCareer: string,
@@ -49,7 +51,7 @@ export class GradesInteractor {
     }
   }
 
-  static async navigateToReportCardPage(page: Page, selectedCareer: string) {
+  async navigateToReportCardPage(page: Page, selectedCareer: string) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -75,11 +77,11 @@ export class GradesInteractor {
       );
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  static async navigateToKardexPage(page: Page) {
+  async navigateToKardexPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -94,14 +96,11 @@ export class GradesInteractor {
       );
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async waitUntilRequestedPageIsLoaded(
-    page: Page,
-    validator: string,
-  ) {
+  private async waitUntilRequestedPageIsLoaded(page: Page, validator: string) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -131,7 +130,7 @@ export class GradesInteractor {
     }
   }
 
-  private static async getGradesForCurrentCalendar(page: Page) {
+  private async getGradesForCurrentCalendar(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
     const grades: Grade[] = [];
@@ -177,35 +176,35 @@ export class GradesInteractor {
     return grades;
   }
 
-  private static async navigateToStudentCurrentGradesMenu(workingFrame: Frame) {
+  private async navigateToStudentCurrentGradesMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentGrades,
     );
   }
 
-  private static async navigateToKardexMenu(workingFrame: Frame) {
+  private async navigateToKardexMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentKardex,
     );
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async navigateToAcademicMenu(workingFrame: Frame) {
+  private async navigateToAcademicMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.academicLink,
     );
   }
 
-  private static async getGradesForAllCalendars(page: Page) {
+  private async getGradesForAllCalendars(page: Page) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -219,7 +218,7 @@ export class GradesInteractor {
     return results;
   }
 
-  private static async getGradesForCalendar(calendar: string, page: Page) {
+  private async getGradesForCalendar(calendar: string, page: Page) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -275,7 +274,7 @@ export class GradesInteractor {
     return new CalendarGrades({ calendar, grades });
   }
 
-  static async findRowOfCalendar(calendar: string, frame: Frame) {
+  async findRowOfCalendar(calendar: string, frame: Frame) {
     let i = 1;
     const calendarSelector =
       constants.selectors.studentKardex.calendarHeadingValidator.replace(
@@ -319,7 +318,7 @@ export class GradesInteractor {
     return i;
   }
 
-  static async parseExtraDataForCurrentGrade(
+  async parseExtraDataForCurrentGrade(
     receivedGrade: KardexGrade,
     frame: Frame,
     row: number,
@@ -367,7 +366,7 @@ export class GradesInteractor {
     }
   }
 
-  static async getAvailableCalendars(frame: Frame) {
+  async getAvailableCalendars(frame: Frame) {
     const calendars = [];
     const CALENDAR_KEY_START_INDEX = 11;
     const CALENDAR_LENGTH = 15;
@@ -386,7 +385,7 @@ export class GradesInteractor {
     return calendars;
   }
 
-  private static getIndexes(text: string, search: string) {
+  private getIndexes(text: string, search: string) {
     const indexes = [];
     let i = -1;
     while ((i = text.indexOf(search, i + 1)) !== -1) {

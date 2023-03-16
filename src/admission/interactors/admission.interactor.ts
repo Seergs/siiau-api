@@ -1,17 +1,25 @@
-import { InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Frame, Page } from 'puppeteer';
 import constants from '../../constants';
 import { PuppeteerService } from '../../puppeteer/puppeteer.service';
 import { Admission } from '../entities/admission.entity';
-import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
+@Injectable()
 export class AdmissionInteractor {
-  private static readonly logger = new Logger(AdmissionInteractor.name);
-  static async getAdmissionInformation(page: Page) {
+  private readonly logger = new Logger(AdmissionInteractor.name);
+
+  constructor(private readonly alerts: AlertService) {}
+
+  async getAdmissionInformation(page: Page) {
     await this.navigateToRequestedPage(page);
     return await this.getAdmissionInformationFromPage(page);
   }
-  static async navigateToRequestedPage(page: Page) {
+  async navigateToRequestedPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -26,14 +34,11 @@ export class AdmissionInteractor {
       );
     } catch (e) {
       this.logger.error(e);
-      Sentry.captureException(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async waitUntilRequestedPageIsLoaded(
-    page: Page,
-    validator: string,
-  ) {
+  private async waitUntilRequestedPageIsLoaded(page: Page, validator: string) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -62,27 +67,27 @@ export class AdmissionInteractor {
     }
   }
 
-  private static async navigateToAdmissionMenu(workingFrame: Frame) {
+  private async navigateToAdmissionMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.admissionLink,
     );
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async navigateToAcademicMenu(workingFrame: Frame) {
+  private async navigateToAcademicMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.academicLink,
     );
   }
-  static async getAdmissionInformationFromPage(page: Page) {
+  async getAdmissionInformationFromPage(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
     const admissions: Admission[] = [];

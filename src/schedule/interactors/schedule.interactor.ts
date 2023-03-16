@@ -8,16 +8,19 @@ import constants from '../../constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { Schedule, SubjectSchedule } from '../entities/schedule.entity';
 import * as Sentry from '@sentry/node';
+import { AlertService } from 'src/alerts/alerts.service';
 
 export class ScheduleInteractor {
-  private static readonly logger = new Logger(ScheduleInteractor.name);
+  private readonly logger = new Logger(ScheduleInteractor.name);
 
-  static async getScheduleForCurrentCalendar(page: Page) {
+  constructor(private readonly alerts: AlertService) {}
+
+  async getScheduleForCurrentCalendar(page: Page) {
     await this.navigateToRequestedPage(page);
     return await this.getStudentScheduleForCurrentCalendar(page);
   }
 
-  static async getScheduleForCalendar(calendar: string, page: Page) {
+  async getScheduleForCalendar(calendar: string, page: Page) {
     await this.navigateToRequestedPage(page);
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
     await this.switchCalendar(calendar, frame);
@@ -25,7 +28,7 @@ export class ScheduleInteractor {
     return await this.getStudentScheduleFromPage(page);
   }
 
-  static async navigateToRequestedPage(page: Page) {
+  async navigateToRequestedPage(page: Page) {
     try {
       const menuFrame = await PuppeteerService.getFrameFromPage(page, 'Menu');
       await this.navigateToStudentsMenu(menuFrame);
@@ -39,36 +42,33 @@ export class ScheduleInteractor {
         constants.selectors.studentSchedule.validator,
       );
     } catch (e) {
-      Sentry.captureException(e);
       this.logger.error(e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 
-  private static async navigateToStudentsMenu(workingFrame: Frame) {
+  private async navigateToStudentsMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.studentsLink,
     );
   }
 
-  private static async navigateToRegisterMenu(workingFrame: Frame) {
+  private async navigateToRegisterMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.registerLink,
     );
   }
 
-  private static async navigateToScheduleMenu(workingFrame: Frame) {
+  private async navigateToScheduleMenu(workingFrame: Frame) {
     await PuppeteerService.clickElementOfWrapper(
       workingFrame,
       constants.selectors.home.scheduleLink,
     );
   }
 
-  private static async waitUntilRequestedPageIsLoaded(
-    page: Page,
-    validator: string,
-  ) {
+  private async waitUntilRequestedPageIsLoaded(page: Page, validator: string) {
     const contentFrame = await PuppeteerService.getFrameFromPage(
       page,
       'Contenido',
@@ -98,7 +98,7 @@ export class ScheduleInteractor {
   }
 
   // calendarValue should be something like 202120 (2021B) to match the <option> value
-  private static async switchCalendar(calendarValue: string, frame: Frame) {
+  private async switchCalendar(calendarValue: string, frame: Frame) {
     try {
       await frame.select(
         constants.selectors.studentSchedule.select,
@@ -109,7 +109,7 @@ export class ScheduleInteractor {
     }
   }
 
-  private static async getValueOfLastCalendar(frame: Frame) {
+  private async getValueOfLastCalendar(frame: Frame) {
     const lastCalendarElement = await PuppeteerService.getElementFromWrapper(
       frame,
       constants.selectors.studentSchedule.lastCalendar,
@@ -117,7 +117,7 @@ export class ScheduleInteractor {
     return await lastCalendarElement.evaluate((e) => e.getAttribute('value'));
   }
 
-  private static async getStudentScheduleForCurrentCalendar(page: Page) {
+  private async getStudentScheduleForCurrentCalendar(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
     const calendarValue = await this.getValueOfLastCalendar(frame);
     await this.switchCalendar(calendarValue, frame);
@@ -125,7 +125,7 @@ export class ScheduleInteractor {
     return await this.getStudentScheduleFromPage(page);
   }
 
-  private static async getStudentScheduleFromPage(page: Page) {
+  private async getStudentScheduleFromPage(page: Page) {
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
 
     const schedule: SubjectSchedule[] = [];
@@ -197,7 +197,7 @@ export class ScheduleInteractor {
     return schedule;
   }
 
-  private static async parseExtraDataForCurrentSubjectSchedule(
+  private async parseExtraDataForCurrentSubjectSchedule(
     receivedSubjectSchedule: SubjectSchedule,
     frame: Frame,
     row: number,
@@ -237,7 +237,7 @@ export class ScheduleInteractor {
     }
   }
 
-  private static parseDayToReadableFormat(dayUnparsed: string) {
+  private parseDayToReadableFormat(dayUnparsed: string) {
     const dayFormats = {
       L: 'Monday',
       M: 'Tuesday',
@@ -250,7 +250,7 @@ export class ScheduleInteractor {
     return dayFormats[dayUnparsed];
   }
 
-  private static parseArrayToReadableFormat(arr: string[]) {
+  private parseArrayToReadableFormat(arr: string[]) {
     if (arr.length === 0) return '';
     if (arr.length === 1) return arr[0];
     return arr.slice(0, -1).join(', ') + ' and ' + arr.slice(-1);

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
 import { Request } from 'express';
-import { AlertService } from 'src/alerts/alerts.service';
+import { AlertService } from '../alerts/alerts.service';
 
 @Injectable()
 export class AdmissionService {
@@ -10,6 +10,7 @@ export class AdmissionService {
   constructor(
     private readonly authService: AuthService,
     private readonly alerts: AlertService,
+    private readonly interactor: AdmissionInteractor,
   ) {}
 
   async getAdmissionInformation(request: Request) {
@@ -17,8 +18,7 @@ export class AdmissionService {
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
     try {
-      const interactor = new AdmissionInteractor(this.alerts);
-      return await interactor.getAdmissionInformation(page);
+      return await this.interactor.getAdmissionInformation(page);
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);

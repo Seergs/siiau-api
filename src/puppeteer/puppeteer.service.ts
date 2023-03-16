@@ -17,7 +17,7 @@ export class PuppeteerService {
 
   async setupBrowser() {
     this.browser = await puppeteer.launch({
-      //headless: process.env.NODE_ENV === 'production',
+      // headless: process.env.NODE_ENV === 'production',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
   }

@@ -34,7 +34,7 @@ export class AdmissionInteractor {
       );
     } catch (e) {
       this.logger.error(e);
-      this.alerts.sendErrorAlert(page, e);
+      await this.alerts.sendErrorAlert(page, e);
     }
   }
 

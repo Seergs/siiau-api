@@ -11,7 +11,7 @@ export class Middleware implements NestMiddleware {
 
   constructor(
     private readonly analyticsService: AnalyticsService,
-    private readonly discordService: AlertService,
+    private readonly alertService: AlertService,
   ) {}
 
   use(request: Request, response: Response, next: NextFunction) {
@@ -32,7 +32,7 @@ export class Middleware implements NestMiddleware {
         this.analyticsService.save(apiRoute, originalUrl);
 
         this.logger.debug('Sending discord message');
-        this.discordService.sendUsageAlert(
+        this.alertService.sendUsageAlert(
           request,
           'Hey! a request was made to ' + apiRoute,
         );

@@ -2,34 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import fetch from 'node-fetch';
 import * as Sentry from '@sentry/node';
-import { Frame, Page } from 'puppeteer';
-const AWS = require('aws-sdk');
+import { Page } from 'puppeteer';
 
 @Injectable()
 export class AlertService {
   private readonly logger = new Logger(AlertService.name);
-
-  async uploadScreenshot(screenshot: string | Buffer) {
-    const accessKeyId = process.env.AWS_ACCESS_KEY;
-    const secretAccessKey = process.env.AWS_SECRET_KEY;
-    const s3 = new AWS.S3({
-      accessKeyId: accessKeyId,
-      secretAccessKey: secretAccessKey,
-    });
-    const bucket = 'siiau-api';
-    const key = `siiau-api-error-${new Date().toISOString()}.png`;
-    this.logger.debug('Uploading screenshot to s3');
-    const result = await s3
-      .upload({
-        Bucket: bucket,
-        Key: key,
-        Body: screenshot,
-        Type: 'image/png',
-      })
-      .promise();
-    this.logger.debug('Screenshot uploaded to s3');
-    return result.Location;
-  }
 
   shouldSendUsageAlert(request: Request): boolean {
     const apiKey = request.headers['x-api-key'];

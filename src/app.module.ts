@@ -26,6 +26,7 @@ import { MiddlewareModule } from './middleware/middleware.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Analytic } from './model/analytic.model';
 import { config } from 'dotenv';
+import { LoggerModule } from 'nestjs-pino';
 
 config();
 
@@ -57,6 +58,14 @@ config();
       dialectOptions: {
         ssl: {
           rejectUnauthorized: false,
+        },
+      },
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'debug',
+        redact: {
+          paths: ['req.headers'],
         },
       },
     }),

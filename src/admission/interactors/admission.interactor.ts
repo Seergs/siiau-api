@@ -49,11 +49,14 @@ export class AdmissionInteractor {
       await page.waitForTimeout(1000);
       const contentFrameContent = await contentFrame.content();
       if (contentFrameContent.includes(validator)) {
-        this.logger.log(
-          `User admission page loaded after ${retryCounter} retries`,
+        this.logger.debug(
+          `Student admission page loaded after ${retryCounter} retries`,
         );
         isStudentAdmissionPageLoaded = true;
       } else {
+        this.logger.debug(
+          `Student admission page not loaded, retrying... this is retry number ${retryCounter}`,
+        );
         retryCounter++;
       }
     }
@@ -121,6 +124,7 @@ export class AdmissionInteractor {
         }
       }
       if (thereAreMoreRows) {
+        this.logger.log({ data: admissionInfo }, 'Admission has been added');
         admissions.push(admissionInfo);
       }
     }

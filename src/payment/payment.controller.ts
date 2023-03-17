@@ -15,7 +15,7 @@ export class PaymentController {
   @Get()
   async getPaymentOrder(@Req() request: Request) {
     const response = await this.paymentService.getPaymentOrder(request);
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, `Response`);
     return response;
   }
 }

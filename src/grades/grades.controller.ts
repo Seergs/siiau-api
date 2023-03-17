@@ -33,7 +33,7 @@ export class GradesController {
       parsedCalendars,
       selectedCareer,
     );
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, 'Response');
     return response;
   }
 

@@ -43,10 +43,9 @@ export class CareerService {
         selectedCareer,
       );
       if (indexSelected == -1) {
-        this.logger.log(
-          "Career '" +
-            selectedCareer +
-            "' NOT found. Choosing the first career on the list..",
+        this.logger.warn(
+          { career: selectedCareer },
+          'Career not found. Choosing the first career on the list',
         );
         await contentFrame.click('input[type=submit]');
       } else {
@@ -57,7 +56,7 @@ export class CareerService {
           ),
         );
         await searchBtn[0].click();
-        this.logger.log("Career '" + selectedCareer + "' founds");
+        this.logger.log({ career: selectedCareer }, 'Career found');
       }
     }
   }

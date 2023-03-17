@@ -35,7 +35,7 @@ export class StudentController {
       paramsRequested,
       selectedCareer,
     );
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, `Response`);
     return response;
   }
 
@@ -51,7 +51,7 @@ export class StudentController {
       request,
       selectedCareer,
     );
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, `Response`);
     return response;
   }
 

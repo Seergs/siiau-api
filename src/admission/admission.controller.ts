@@ -17,7 +17,7 @@ export class AdmissionController {
     const response = await this.admissionService.getAdmissionInformation(
       request,
     );
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, 'Response');
     return response;
   }
 }

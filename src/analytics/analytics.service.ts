@@ -19,7 +19,7 @@ export class AnalyticsService {
         controller,
         path,
       });
-      this.logger.debug('analytics saved');
+      this.logger.debug({ controller, path }, 'Analytic has been saved');
     } catch (e) {
       throw new InternalServerErrorException('Something went wrong: ' + e);
     }

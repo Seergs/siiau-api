@@ -41,7 +41,7 @@ export class PuppeteerService {
     }
     if (!frame)
       throw new InternalServerErrorException('Frame not found ' + frameName);
-    this.logger.debug('Frame ' + frameName + ' found after ' + i + ' retries');
+    this.logger.debug({ frameName, retries: i }, 'Frame found');
     return frame;
   }
 
@@ -76,9 +76,7 @@ export class PuppeteerService {
       throw new InternalServerErrorException(
         'Element with xpath ' + selector + ' not found',
       );
-    this.logger.debug(
-      `Element with xpath ${selector} found after ${retries} retries`,
-    );
+    this.logger.debug({ selector, retries }, `Element found`);
     return element;
   }
 

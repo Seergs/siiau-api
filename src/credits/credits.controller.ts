@@ -15,7 +15,7 @@ export class CreditsController {
   @Get()
   async getCredits(@Req() request: Request) {
     const response = await this.creditsService.getCredits(request);
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, 'Response');
     return response;
   }
 }

@@ -308,6 +308,7 @@ export class GradesInteractor {
         }
       } catch (e) {
         this.logger.debug(
+          { wantedCalendar: calendarSelector },
           'Calendar not found in ' +
             currentHeadingSelector +
             ', trying next one',

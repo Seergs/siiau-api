@@ -15,20 +15,16 @@ export class Middleware implements NestMiddleware {
   ) {}
 
   use(request: Request, response: Response, next: NextFunction) {
-    const { method, originalUrl } = request;
+    const { originalUrl } = request;
     response.on('close', () => {
       const { statusCode } = response;
-      this.logger.debug(`${method} ${originalUrl} ${statusCode}`);
-
       const isOkResponse = statusCode < 300;
 
       if (!isOkResponse || this.shouldIgnorePath(originalUrl)) {
         this.logger.debug(`Path ${originalUrl} wont be stored as analytic`);
       } else {
         const apiRoute = originalUrl.split('/')[1];
-        this.logger.debug(
-          `Saving analytic: {controller=${apiRoute}, path=${originalUrl}}`,
-        );
+        this.logger.debug({ apiRoute, originalUrl }, `Saving analytic`);
         this.analyticsService.save(apiRoute, originalUrl);
 
         this.logger.debug('Sending discord message');

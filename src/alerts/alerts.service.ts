@@ -31,11 +31,12 @@ export class AlertService {
           },
           body: JSON.stringify({ content: formattedMessage }),
         });
-        this.logger.log('Discord message sent');
-      } catch (e) {
-        this.logger.error(
-          'Something went wrong while sending the message: ' + e,
+        this.logger.debug(
+          { message: formattedMessage },
+          'Usage alert message sent',
         );
+      } catch (e) {
+        this.logger.error({ error: e }, 'Error sending usage alert message');
         Sentry.captureException(e);
       }
     } else {

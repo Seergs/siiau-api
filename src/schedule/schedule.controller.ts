@@ -31,7 +31,7 @@ export class ScheduleController {
       request,
       parsedCalendar,
     );
-    this.logger.debug(`Response: ${JSON.stringify(response)}`);
+    this.logger.debug({ data: response }, `Response`);
     return response;
   }
 

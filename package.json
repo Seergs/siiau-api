@@ -39,6 +39,7 @@
     "dotenv": "^10.0.0",
     "mysql2": "^2.3.3",
     "nestjs-pino": "^3.1.2",
+    "newrelic": "^9.12.1",
     "node-fetch": "^2.6.7",
     "pino-http": "^8.3.3",
     "puppeteer": "^13.0.0",

@@ -21,6 +21,27 @@ Note: For every request you need to send headers `x-student-code` and `x-student
 - Student schedule
 - Payment order information
 
+### Example
+
+```bash
+curl <API_HOST>/student --header "x-student-code:217758497" --header "x-student-nip:<siiau_nip>"
+```
+
+Will return a JSON like the following:
+```json
+{
+  "code": "217758497",
+  "name": "SERGIO SUAREZ ALVAREZ",
+  "campus": "CENTRO UNIVERSITARIO DE CIENCIAS EXACTAS E INGENIERIAS",
+  "career": "INGENIERIA EN COMPUTACION (INCO)",
+  "degree": "LICENCIATURA",
+  "status": "GRADUADO SIN SERVICIO SOCIAL",
+  "location": "CAMPUS TECNOLOGICO GDL",
+  "lastCalendar": "2021B",
+  "admissionDate": "2017B"
+}
+```
+
 ### Known issues
 
 - Sometimes there is an error when trying to find some element from the page, still trying to find the bug, just re-make the request for now

@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { CreditsInteractor } from './interactors/credits.interactor';
@@ -35,7 +39,9 @@ export class CreditsService {
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);
-      return 'Something went wrong getting credits';
+      throw new InternalServerErrorException(
+        'Something went wrong getting credits',
+      );
     } finally {
       if (!page.isClosed()) {
         await page.close();

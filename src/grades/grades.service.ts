@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { Page } from 'puppeteer';
 import { AuthService } from 'src/auth/auth.service';
@@ -70,7 +75,9 @@ export class GradesService {
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);
-      return 'Something went wrong getting the student grades all calendars';
+      throw new InternalServerErrorException(
+        'Something went wrong getting the student grades all calendars',
+      );
     } finally {
       if (!page.isClosed()) {
         await page.close();
@@ -88,7 +95,9 @@ export class GradesService {
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);
-      return 'Something went wrong getting the student grades for current calendar';
+      throw new InternalServerErrorException(
+        'Something went wrong getting the student grades for current calendar',
+      );
     } finally {
       if (!page.isClosed()) {
         await page.close();
@@ -104,9 +113,9 @@ export class GradesService {
       this.logger.error(e);
       if (e instanceof BadRequestException) throw e;
       await this.alerts.sendErrorAlert(page, e);
-      return (
+      throw new InternalServerErrorException(
         'Something went wrong getting the student grades for calendars ' +
-        calendars
+          calendars,
       );
     } finally {
       if (!page.isClosed()) {

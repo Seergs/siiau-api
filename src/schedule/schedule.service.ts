@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { Page } from 'puppeteer';
 import { AuthService } from 'src/auth/auth.service';
@@ -52,7 +57,9 @@ export class ScheduleService {
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);
-      return 'Something went wrong getting the student schedule for current calendar';
+      throw new InternalServerErrorException(
+        'Something went wrong getting the student schedule for current calendar',
+      );
     } finally {
       if (!page.isClosed()) {
         await page.close();
@@ -68,9 +75,9 @@ export class ScheduleService {
       this.logger.error(e);
       if (e instanceof BadRequestException) throw e;
       await this.alerts.sendErrorAlert(page, e);
-      return (
+      throw new InternalServerErrorException(
         'Something went wrong getting the student schedule for calendars ' +
-        calendar
+          calendar,
       );
     } finally {
       if (!page.isClosed()) {

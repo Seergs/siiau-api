@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AlertService } from 'src/alerts/alerts.service';
 import { AuthService } from 'src/auth/auth.service';
@@ -103,7 +104,7 @@ describe('AdmissionService', () => {
       );
     });
 
-    it('should return error when something fails', async () => {
+    it('should throws error when something fails', async () => {
       const request = {
         headers: {
           'x-student-code': '217758497',
@@ -138,12 +139,11 @@ describe('AdmissionService', () => {
 
       admissionService = module.get<AdmissionService>(AdmissionService);
 
-      const result = await admissionService.getAdmissionInformation(
-        request as any,
-      );
-      expect(result).toEqual(
-        'Something went wrong getting the student admission information',
-      );
+      try {
+        await admissionService.getAdmissionInformation(request as any);
+      } catch (e) {
+        expect(e).toBeInstanceOf(InternalServerErrorException);
+      }
     });
   });
 });

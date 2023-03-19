@@ -36,6 +36,7 @@
     "@types/mysql": "^2.15.20",
     "@types/node-fetch": "^2.5.12",
     "cache-manager": "^3.6.0",
+    "cheerio": "^1.0.0-rc.12",
     "dotenv": "^10.0.0",
     "mysql2": "^2.3.3",
     "nestjs-pino": "^3.1.2",

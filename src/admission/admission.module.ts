@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 import { AdmissionService } from './admission.service';
-import { AdmissionController } from './admission.controller';
+import { AdmissionControllerV1 } from './admission.controller.v1';
 import { PuppeteerModule } from 'src/puppeteer/puppeteer.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AlertsModule } from 'src/alerts/alerts.module';
-import { AdmissionInteractor } from './interactors/admission.interactor';
 import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
-  controllers: [AdmissionController],
-  providers: [AdmissionService, AdmissionInteractor],
+  controllers: [AdmissionControllerV1],
+  providers: [AdmissionService],
   imports: [PuppeteerModule, AuthModule, AlertsModule, CacheModule],
 })
 export class AdmissionModule {}

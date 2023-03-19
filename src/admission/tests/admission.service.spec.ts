@@ -1,42 +1,49 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { AlertService } from 'src/alerts/alerts.service';
 import { AuthService } from 'src/auth/auth.service';
 import { CacheClient } from 'src/cache/cache.client';
 import { AdmissionService } from '../admission.service';
-import { Admission } from '../entities/admission.entity';
-import { AdmissionInteractor } from '../interactors/admission.interactor';
+import fetch from 'node-fetch';
+jest.mock('node-fetch');
 
-class MockAlertService {
-  sendErrorAlert() {
-    return Promise.resolve();
-  }
-}
+const html = `<body>
+<div></div>
+<div></div>
+<div></div>
+<div>
+<div></div>
+<div></div>
+<div>
+<TABLE>
+<TR>
+<TH>Ciclo</TH>
+<TH>Escuela de procedencia</TH>
+<TH>Tipo de admisi&oacute;n</TH>
+<TH>PEP</TH>
+<TH>PAA</TH>
+<TH>PA</TH>
+<TH>AV</TH>
+<TH>Carrera</TH>
+</TR>
+<TR>
+<TD>VALUE1</TD>
+<TD>VALUE2</TD>
+<TD>VALUE3</TD>
+<TD>VALUE4</TD>
+<TD>VALUE5</TD>
+<TD>VALUE6</TD>
+<TD>VALUE7</TD>
+<TD>VALUE8</TD>
+</TR>
+</TABLE></div></div></body>`;
+
 class MockAuthService {
-  login() {
-    const page = {
-      isClosed() {
-        return false;
-      },
-      close() {
-        return Promise.resolve();
-      },
+  async getSession() {
+    return {
+      cookie: 'cookie',
+      studentCode: 'studentCode',
+      pidm: 'pidm',
     };
-    return Promise.resolve(page);
-  }
-}
-class MockInteractor {
-  getAdmissionInformation() {
-    const admission = new Admission();
-    admission.career = 'Ingeniería en Computación';
-    const admissions = [admission];
-    return Promise.resolve(admissions);
-  }
-}
-
-class MockInteractorError {
-  getAdmissionInformation() {
-    return Promise.reject(new Error('Error'));
   }
 }
 
@@ -53,30 +60,16 @@ describe('AdmissionService', () => {
   let admissionService: AdmissionService;
 
   beforeEach(async () => {
-    const AlertServiceProvider = {
-      provide: AlertService,
-      useClass: MockAlertService,
-    };
     const AuthServiceProvider = {
       provide: AuthService,
       useClass: MockAuthService,
-    };
-    const InteractorProvider = {
-      provide: AdmissionInteractor,
-      useClass: MockInteractor,
     };
     const CacheProvider = {
       provide: CacheClient,
       useClass: MockCacheClient,
     };
     const module = await Test.createTestingModule({
-      providers: [
-        AdmissionService,
-        AlertServiceProvider,
-        AuthServiceProvider,
-        InteractorProvider,
-        CacheProvider,
-      ],
+      providers: [AdmissionService, AuthServiceProvider, CacheProvider],
     }).compile();
 
     admissionService = module.get<AdmissionService>(AdmissionService);
@@ -94,14 +87,15 @@ describe('AdmissionService', () => {
           'x-student-nip': '123456',
         },
       };
-      const result = await admissionService.getAdmissionInformation(
-        request as any,
-      );
+      const mockedFetch = fetch as jest.MockedFunction<typeof fetch>;
+      mockedFetch.mockResolvedValue({
+        text: () => Promise.resolve(html),
+      } as any);
+      const result = await admissionService.getAdmissionInfoV1(request as any);
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(1);
-      expect((result[0] as Admission).career).toEqual(
-        'Ingeniería en Computación',
-      );
+      expect(result[0].calendar).toEqual('VALUE1');
+      expect(result[0].schoolOfOrigin).toEqual('VALUE2');
     });
 
     it('should throws error when something fails', async () => {
@@ -111,36 +105,26 @@ describe('AdmissionService', () => {
           'x-student-nip': '123456',
         },
       };
-      const AlertServiceProvider = {
-        provide: AlertService,
-        useClass: MockAlertService,
-      };
       const AuthServiceProvider = {
         provide: AuthService,
         useClass: MockAuthService,
-      };
-      const InteractorProvider = {
-        provide: AdmissionInteractor,
-        useClass: MockInteractorError,
       };
       const CacheProvider = {
         provide: CacheClient,
         useClass: MockCacheClient,
       };
       const module = await Test.createTestingModule({
-        providers: [
-          AdmissionService,
-          AlertServiceProvider,
-          AuthServiceProvider,
-          InteractorProvider,
-          CacheProvider,
-        ],
+        providers: [AdmissionService, AuthServiceProvider, CacheProvider],
       }).compile();
 
       admissionService = module.get<AdmissionService>(AdmissionService);
+      const mockedFetch = fetch as jest.MockedFunction<typeof fetch>;
+      mockedFetch.mockResolvedValue({
+        text: () => Promise.reject('Some error'),
+      } as any);
 
       try {
-        await admissionService.getAdmissionInformation(request as any);
+        await admissionService.getAdmissionInfoV1(request as any);
       } catch (e) {
         expect(e).toBeInstanceOf(InternalServerErrorException);
       }

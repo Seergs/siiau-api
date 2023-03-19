@@ -1,15 +1,15 @@
 import { Test } from '@nestjs/testing';
-import { AdmissionController } from '../admission.controller';
+import { AdmissionControllerV1 } from '../admission.controller.v1';
 import { AdmissionService } from '../admission.service';
 
 class AdmissionServiceMock {
-  getAdmissionInformation() {
+  getAdmissionInfoV1() {
     return 'Admission information';
   }
 }
 
 describe('AdmissionController', () => {
-  let admissionController: AdmissionController;
+  let admissionController: AdmissionControllerV1;
   beforeAll(async () => {
     const ApiServiceProvider = {
       provide: AdmissionService,
@@ -17,11 +17,12 @@ describe('AdmissionController', () => {
     };
 
     const moduleRef = await Test.createTestingModule({
-      controllers: [AdmissionController],
+      controllers: [AdmissionControllerV1],
       providers: [ApiServiceProvider],
     }).compile();
-    admissionController =
-      moduleRef.get<AdmissionController>(AdmissionController);
+    admissionController = moduleRef.get<AdmissionControllerV1>(
+      AdmissionControllerV1,
+    );
   });
 
   it('should be defined', () => {

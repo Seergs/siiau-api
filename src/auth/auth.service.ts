@@ -8,6 +8,14 @@ import { Page } from 'puppeteer';
 import { AlertService } from 'src/alerts/alerts.service';
 import constants from 'src/constants';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
+import fetch from 'node-fetch';
+import { Request } from 'express';
+
+type Session = {
+  cookie: string;
+  pidm: string;
+  studentCode: string;
+};
 
 @Injectable()
 export class AuthService {
@@ -17,6 +25,44 @@ export class AuthService {
     private readonly puppeteerService: PuppeteerService,
     private readonly alerts: AlertService,
   ) {}
+
+  async getSession(request: Request): Promise<Session | undefined> {
+    this.logger.debug('Logging in with http');
+    const studentCode = request.headers['x-student-code'] as string;
+    const studentNip = request.headers['x-student-nip'] as string;
+    try {
+      const response = await fetch(constants.urls.login, {
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        body: `p_codigo_c=${studentCode}&p_clave_c=${studentNip}`,
+        method: 'POST',
+      });
+      const cookie = response.headers.get('set-cookie');
+      const data = await response.text();
+      if (data.includes('p_pidm_n')) {
+        const pidm = cookie
+          .split(',')
+          .find((c) => c.includes('SIIAUUDG'))
+          .split(';')[0]
+          .split('=')[1];
+        const cookies = cookie
+          .split(',')
+          .map((c) => c.split(';')[0])
+          .join(';');
+        return {
+          cookie: cookies,
+          pidm,
+          studentCode,
+        };
+      }
+
+      throw new UnauthorizedException('Invalid credentials');
+    } catch (e) {
+      this.logger.error(e);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  }
 
   async login(studentCode: string, studentNip: string): Promise<Page> {
     if (!studentCode || !studentNip)

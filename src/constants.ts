@@ -1,6 +1,8 @@
 export default {
   urls: {
     homePage: 'http://siiauescolar.siiau.udg.mx/wus/gupprincipal.inicio',
+    admission: 'http://siiauescolar.siiau.udg.mx/wal/sgpinfo.ingreso?pidmp=',
+    login: 'http://siiauescolar.siiau.udg.mx/wus/gupprincipal.valida_inicio',
   },
   selectors: {
     login: {
@@ -108,6 +110,9 @@ export default {
         6: 'admissionScore',
         7: 'personalContribution',
         8: 'career',
+      },
+      v1: {
+        table: 'body > div:nth-child(4) > div:nth-child(3) > table',
       },
     },
     studentSchedule: {

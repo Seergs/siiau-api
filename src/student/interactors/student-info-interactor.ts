@@ -16,13 +16,9 @@ export class StudentInfoInteractor {
 
   constructor(private readonly alerts: AlertService) {}
 
-  async getStudentInfo(
-    page: Page,
-    paramsRequested: string[],
-    selectedCareer: string,
-  ) {
+  async getStudentInfo(page: Page, selectedCareer: string) {
     await this.navigateToRequestedPage(page, selectedCareer);
-    return await this.getInfo(page, paramsRequested);
+    return await this.getInfo(page);
   }
 
   private async navigateToRequestedPage(page: Page, selectedCareer: string) {
@@ -98,7 +94,7 @@ export class StudentInfoInteractor {
     );
   }
 
-  private async getInfo(page: Page, paramsRequested: string[]) {
+  private async getInfo(page: Page) {
     const student = new StudentInfo();
     const totalParams = studentInfoKeys;
     const frame = await PuppeteerService.getFrameFromPage(page, 'Contenido');
@@ -111,20 +107,6 @@ export class StudentInfoInteractor {
       student[param] = await element.evaluate((e) => e.textContent);
     }
 
-    this.filterUnrequestedParams(student, paramsRequested);
     return student;
-  }
-
-  private filterUnrequestedParams(
-    preResponse: StudentInfo,
-    paramsRequested: string[],
-  ) {
-    const totalParams = studentInfoKeys;
-    const unrequestedParams = totalParams.filter(
-      (p) => !paramsRequested.includes(p),
-    );
-    for (const unrequestedParam of unrequestedParams) {
-      delete preResponse[unrequestedParam];
-    }
   }
 }

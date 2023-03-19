@@ -43,6 +43,7 @@
     "node-fetch": "^2.6.7",
     "pino-http": "^8.3.3",
     "puppeteer": "^13.0.0",
+    "redis": "^4.6.5",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",

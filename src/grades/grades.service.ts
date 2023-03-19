@@ -4,14 +4,17 @@ import { Page } from 'puppeteer';
 import { AuthService } from 'src/auth/auth.service';
 import { GradesInteractor } from './interactors/grades.interactor';
 import { AlertService } from 'src/alerts/alerts.service';
+import { CacheClient } from 'src/cache/cache.client';
 
 @Injectable()
 export class GradesService {
   private readonly logger = new Logger(GradesService.name);
+  private readonly cacheSuffix = 'grades';
 
   constructor(
     private readonly authService: AuthService,
     private readonly alerts: AlertService,
+    private readonly cache: CacheClient,
   ) {}
 
   async getGrades(
@@ -23,12 +26,41 @@ export class GradesService {
     const studentNip = request.headers['x-student-nip'] as string;
     const page = await this.authService.login(studentCode, studentNip);
     if (!calendars) {
-      return this.getGradesForAllCalendars(page);
+      const cacheKey = `${studentCode}-${this.cacheSuffix}-all`;
+      const cached = await this.cache.get(cacheKey);
+      if (cached) {
+        this.logger.debug('Returning cached data');
+        return JSON.parse(cached);
+      }
+      this.logger.debug('Returning fresh data');
+      const data = await this.getGradesForAllCalendars(page);
+      await this.cache.set(cacheKey, JSON.stringify(data));
+      return data;
     }
     if (calendars.length === 1 && calendars[0] === 'current') {
-      return this.getGradesForCurrentCalendar(page, selectedCareer);
+      const cacheKey = `${studentCode}-${this.cacheSuffix}-current`;
+      const cached = await this.cache.get(cacheKey);
+      if (cached) {
+        this.logger.debug('Returning cached data');
+        return JSON.parse(cached);
+      }
+      this.logger.debug('Returning fresh data');
+      const data = await this.getGradesForCurrentCalendar(page, selectedCareer);
+      await this.cache.set(cacheKey, JSON.stringify(data));
+      return data;
     }
-    return this.getGradesForCalendars(calendars, page);
+    const cacheKey = `${studentCode}-${this.cacheSuffix}-${calendars.join(
+      '-',
+    )}`;
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      this.logger.debug('Returning cached data');
+      return JSON.parse(cached);
+    }
+    this.logger.debug('Returning fresh data');
+    const data = await this.getGradesForCalendars(calendars, page);
+    await this.cache.set(cacheKey, JSON.stringify(data));
+    return data;
   }
 
   async getGradesForAllCalendars(page: Page) {

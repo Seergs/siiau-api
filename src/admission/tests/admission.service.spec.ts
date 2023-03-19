@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { AlertService } from 'src/alerts/alerts.service';
 import { AuthService } from 'src/auth/auth.service';
+import { CacheClient } from 'src/cache/cache.client';
 import { AdmissionService } from '../admission.service';
 import { Admission } from '../entities/admission.entity';
 import { AdmissionInteractor } from '../interactors/admission.interactor';
@@ -38,6 +39,15 @@ class MockInteractorError {
   }
 }
 
+class MockCacheClient {
+  get() {
+    return Promise.resolve(null);
+  }
+  set() {
+    return Promise.resolve();
+  }
+}
+
 describe('AdmissionService', () => {
   let admissionService: AdmissionService;
 
@@ -54,12 +64,17 @@ describe('AdmissionService', () => {
       provide: AdmissionInteractor,
       useClass: MockInteractor,
     };
+    const CacheProvider = {
+      provide: CacheClient,
+      useClass: MockCacheClient,
+    };
     const module = await Test.createTestingModule({
       providers: [
         AdmissionService,
         AlertServiceProvider,
         AuthServiceProvider,
         InteractorProvider,
+        CacheProvider,
       ],
     }).compile();
 
@@ -107,12 +122,17 @@ describe('AdmissionService', () => {
         provide: AdmissionInteractor,
         useClass: MockInteractorError,
       };
+      const CacheProvider = {
+        provide: CacheClient,
+        useClass: MockCacheClient,
+      };
       const module = await Test.createTestingModule({
         providers: [
           AdmissionService,
           AlertServiceProvider,
           AuthServiceProvider,
           InteractorProvider,
+          CacheProvider,
         ],
       }).compile();
 

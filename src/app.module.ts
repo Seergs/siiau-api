@@ -1,9 +1,4 @@
-import {
-  CacheModule,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { StudentModule } from './student/student.module';
 import { PuppeteerService } from './puppeteer/puppeteer.service';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
@@ -15,10 +10,8 @@ import { CreditsService } from './credits/credits.service';
 import { CreditsModule } from './credits/credits.module';
 import { AdmissionModule } from './admission/admission.module';
 import { ScheduleModule as UserScheduleModule } from './schedule/schedule.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AlertsModule } from './alerts/alerts.module';
 import { PaymentModule } from './payment/payment.module';
-import { HttpCacheInterceptor } from './cache/cache.interceptor';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HealthController } from './health/health.controller';
 import { Middleware } from './middleware/middleware';
@@ -27,6 +20,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Analytic } from './model/analytic.model';
 import { config } from 'dotenv';
 import { LoggerModule } from 'nestjs-pino';
+import { CacheModule } from './cache/cache.module';
 
 config();
 
@@ -41,12 +35,10 @@ config();
     AdmissionModule,
     UserScheduleModule,
     AlertsModule,
-    CacheModule.register({
-      ttl: 60 * 10,
-    }),
     PaymentModule,
     ScheduleModule.forRoot(),
     MiddlewareModule,
+    CacheModule,
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -71,14 +63,7 @@ config();
     }),
   ],
   controllers: [CreditsController, HealthController],
-  providers: [
-    PuppeteerService,
-    CreditsService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: HttpCacheInterceptor,
-    },
-  ],
+  providers: [PuppeteerService, CreditsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -12,7 +12,10 @@ import { GradesService } from './grades.service';
 import { RootResponse, RootHeaders, RootQuery } from './swagger';
 
 @ApiTags('grades')
-@Controller(['grades', 'kardex'])
+@Controller({
+  version: '1',
+  path: ['grades', 'kardex'],
+})
 export class GradesController {
   private readonly logger = new Logger('GradesController');
   constructor(private readonly gradesService: GradesService) {}

@@ -12,7 +12,10 @@ import { RootResponse, RootHeaders, RootQuery } from './swagger';
 import { ApiHeaders, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('schedule')
-@Controller('schedule')
+@Controller({
+  version: '1',
+  path: 'schedule',
+})
 export class ScheduleController {
   private readonly logger = new Logger('ScheduleController');
   constructor(private readonly scheduleService: ScheduleService) {}

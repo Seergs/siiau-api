@@ -24,6 +24,7 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   app.enableCors();
   app.useGlobalInterceptors(new SentryInterceptor());
+  app.enableVersioning();
 
   const config = new DocumentBuilder()
     .setTitle('SIIAU API')

@@ -5,7 +5,10 @@ import { CreditsService } from './credits.service';
 import { RootResponse, RootHeaders } from './swagger';
 
 @ApiTags('credits')
-@Controller('credits')
+@Controller({
+  version: '1',
+  path: 'credits',
+})
 export class CreditsController {
   private readonly logger = new Logger('CreditsController');
   constructor(private readonly creditsService: CreditsService) {}

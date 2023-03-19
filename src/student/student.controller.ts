@@ -15,7 +15,10 @@ import {
 } from './swagger';
 
 @ApiTags('student')
-@Controller('student')
+@Controller({
+  version: '1',
+  path: 'student',
+})
 export class StudentController {
   private readonly logger = new Logger('StudentController');
   constructor(private readonly studentService: StudentService) {}

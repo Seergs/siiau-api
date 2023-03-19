@@ -32,4 +32,8 @@ export class CacheClient {
   async delete(key: string) {
     await this.client.del(key);
   }
+
+  async refresh() {
+    await this.client.flushAll();
+  }
 }

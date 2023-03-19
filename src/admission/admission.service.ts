@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { AdmissionInteractor } from './interactors/admission.interactor';
 import { Request } from 'express';
@@ -34,7 +38,9 @@ export class AdmissionService {
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);
-      return 'Something went wrong getting the student admission information';
+      throw new InternalServerErrorException(
+        'Something went wrong getting the student admission information',
+      );
     } finally {
       if (!page.isClosed()) {
         await page.close();

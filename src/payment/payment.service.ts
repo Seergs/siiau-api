@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { PaymentInteractor } from './interactors/payment.interactor';
@@ -35,7 +39,9 @@ export class PaymentService {
     } catch (e) {
       this.logger.error(e);
       await this.alerts.sendErrorAlert(page, e);
-      return 'Something went wrong getting the student payment order';
+      throw new InternalServerErrorException(
+        'Something went wrong getting the student payment order',
+      );
     } finally {
       if (!page.isClosed()) {
         await page.close();

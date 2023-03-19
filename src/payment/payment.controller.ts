@@ -5,7 +5,10 @@ import { PaymentService } from './payment.service';
 import { RootResponse, RootHeaders } from './swagger';
 
 @ApiTags('paymentorder')
-@Controller('paymentorder')
+@Controller({
+  version: '1',
+  path: 'paymentorder',
+})
 export class PaymentController {
   private readonly logger = new Logger('PaymentController');
   constructor(private readonly paymentService: PaymentService) {}

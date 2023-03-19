@@ -1,6 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 
-@Controller('health')
+@Controller({
+  version: VERSION_NEUTRAL,
+  path: 'health',
+})
 export class HealthController {
   @Get()
   checkHealth() {

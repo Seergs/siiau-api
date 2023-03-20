@@ -11,7 +11,7 @@ import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import fetch from 'node-fetch';
 import { Request } from 'express';
 
-type Session = {
+export type Session = {
   cookie: string;
   pidm: string;
   studentCode: string;

@@ -3,7 +3,7 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService, Session } from 'src/auth/auth.service';
 import { Request } from 'express';
 import { CacheClient } from 'src/cache/cache.client';
 import fetch from 'node-fetch';

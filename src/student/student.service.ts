@@ -3,13 +3,13 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { StudentInfoInteractor } from './interactors/student-info-interactor';
-import { StudentProgressInteractor } from './interactors/student-progress-interactor';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService, Session } from 'src/auth/auth.service';
 import { Request } from 'express';
-import { AlertService } from 'src/alerts/alerts.service';
 import { CacheClient } from 'src/cache/cache.client';
 import { StudentInfo, studentInfoKeys } from './entities/student-info-entity';
+import fetch from 'node-fetch';
+import { StudentParser } from './student.parser';
+import constants from 'src/constants';
 
 @Injectable()
 export class StudentService {
@@ -18,75 +18,74 @@ export class StudentService {
 
   constructor(
     private readonly authService: AuthService,
-    private readonly alerts: AlertService,
     private readonly cache: CacheClient,
   ) {}
 
-  async getStudent(
-    request: Request,
-    paramsRequested: string[],
-    selectedCareer: string,
-  ) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    const page = await this.authService.login(studentCode, studentNip);
-    const careerCacheKey = selectedCareer ? selectedCareer : 'any';
-    const cacheKey = `${studentCode}-${this.cacheSuffix}-${careerCacheKey}`;
-    const cached = await this.cache.get(cacheKey);
-    if (cached) {
-      this.logger.debug('Returning cached data');
-      const data = JSON.parse(cached);
-      this.filterUnrequestedParams(data, paramsRequested);
-      return data;
-    }
-
+  async getStudent(request: Request, params: string[], career: string) {
+    const session = await this.authService.getSession(request);
+    this.logger.debug('Successfully logged in');
     try {
+      const cacheKey = this.getCacheKey(session, career);
+      const cached = await this.cache.get(cacheKey);
+      if (cached) {
+        this.logger.debug('Returning cached data');
+        const preResponse = JSON.parse(cached);
+        this.filterUnrequestedParams(preResponse, params);
+        return preResponse;
+      }
+
       this.logger.debug('Returning fresh data');
-      const interactor = new StudentInfoInteractor(this.alerts);
-      const data = await interactor.getStudentInfo(page, selectedCareer);
+      const careerData = await this.getCareerParams(session);
+      this.logger.debug(careerData, 'Got double career params');
+      const data = await this.getStudentInfo(
+        session,
+        careerData.major,
+        careerData.admissionCycle,
+      );
       await this.cache.set(cacheKey, JSON.stringify(data));
-      this.filterUnrequestedParams(data, paramsRequested);
+      this.filterUnrequestedParams(data, params);
       return data;
     } catch (e) {
       this.logger.error(e);
-      await this.alerts.sendErrorAlert(page, e);
       throw new InternalServerErrorException(
         'Something went wrong getting the student information',
       );
-    } finally {
-      if (!page.isClosed()) {
-        await page.close();
-      }
     }
   }
 
+  getCacheKey(session: Session, career: string) {
+    const careerCacheKey = career ? career : 'any';
+    return `${session.studentCode}-${this.cacheSuffix}-${careerCacheKey}`;
+  }
+
   async getAcademicProgress(request: Request, selectedCareer: string) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    const page = await this.authService.login(studentCode, studentNip);
-    const careerCacheKey = selectedCareer ? selectedCareer : 'any';
-    const cacheKey = `${studentCode}-${this.cacheSuffix}-progress-${careerCacheKey}`;
-    const cached = await this.cache.get(cacheKey);
-    if (cached) {
-      this.logger.debug('Returning cached data');
-      return JSON.parse(cached);
-    }
+    const session = await this.authService.getSession(request);
+    this.logger.debug('Successfully logged in');
+
     try {
+      const careerCacheKey = selectedCareer ? selectedCareer : 'any';
+      const cacheKey = `${session.studentCode}-${this.cacheSuffix}-progress-${careerCacheKey}`;
+      const cached = await this.cache.get(cacheKey);
+      if (cached) {
+        this.logger.debug('Returning cached data');
+        return JSON.parse(cached);
+      }
+
       this.logger.debug('Returning fresh data');
-      const interactor = new StudentProgressInteractor(this.alerts);
-      const data = await interactor.getAcademicProgress(page, selectedCareer);
+      const careerData = await this.getCareerParams(session);
+      this.logger.debug(careerData, 'Got double career params');
+      const data = await this.getStudentProgress(
+        session,
+        careerData.major,
+        careerData.admissionCycle,
+      );
       await this.cache.set(cacheKey, JSON.stringify(data));
       return data;
     } catch (e) {
       this.logger.error(e);
-      await this.alerts.sendErrorAlert(page, e);
       throw new InternalServerErrorException(
         'Something went wrong getting the student progress',
       );
-    } finally {
-      if (!page.isClosed()) {
-        await page.close();
-      }
     }
   }
 
@@ -103,7 +102,59 @@ export class StudentService {
     }
   }
 
-  async login(studentCode: string, studentNip: string) {
-    await this.authService.login(studentCode, studentNip);
+  async login(req: Request) {
+    await this.authService.getSession(req);
+  }
+
+  async getCareerParams(session: Session) {
+    try {
+      const response = await fetch(constants.urls.careerParams, {
+        method: 'POST',
+        headers: {
+          Cookie: session.cookie,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `pForma=SGPHIST.FICHA_DC&pParametroPidmAlumno=pidmp&pPidmAlumno=${session.pidm}&pParametroCarrera=majrP&pParametroCicloAdmision=cicloaP`,
+      });
+      return new StudentParser().parseCareerParams(await response.text());
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  async getStudentInfo(
+    session: Session,
+    career: string,
+    admissionCycle: string,
+  ) {
+    try {
+      const response = await fetch(constants.urls.student, {
+        method: 'POST',
+        headers: {
+          Cookie: session.cookie,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `pidmp=${session.pidm}&majrP=${career}&cicloaP=${admissionCycle}`,
+      });
+      return new StudentParser().parse(await response.text());
+    } catch (e) {
+      this.logger.error(e);
+    }
+  }
+
+  async getStudentProgress(session: Session, career: string, cycle: string) {
+    try {
+      const response = await fetch(constants.urls.student, {
+        method: 'POST',
+        headers: {
+          Cookie: session.cookie,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `pidmp=${session.pidm}&majrP=${career}&cicloaP=${cycle}`,
+      });
+      return new StudentParser().parseProgress(await response.text());
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 }

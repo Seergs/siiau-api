@@ -3,6 +3,8 @@ export default {
     homePage: 'http://siiauescolar.siiau.udg.mx/wus/gupprincipal.inicio',
     admission: 'http://siiauescolar.siiau.udg.mx/wal/sgpinfo.ingreso?pidmp=',
     login: 'http://siiauescolar.siiau.udg.mx/wus/gupprincipal.valida_inicio',
+    careerParams: 'http://siiauescolar.siiau.udg.mx/wal/SGPPROC.DOBLE_CARRERA',
+    student: 'http://siiauescolar.siiau.udg.mx/wal/SGPHIST.FICHA_DC',
   },
   selectors: {
     login: {
@@ -38,6 +40,24 @@ export default {
       campus: '/html/body/div[3]/table/tbody/tr[5]/td',
       location: '/html/body/div[3]/table/tbody/tr[6]/td',
       validator: 'Ficha técnica del estudiante',
+      v1: {
+        code: 'body > div:nth-child(12) > table > tbody > tr:nth-child(2) > td:nth-child(2)',
+        name: 'body > div:nth-child(12) > table > tbody > tr:nth-child(2) > td:nth-child(4)',
+        status:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(3) > td:nth-child(2)',
+        degree:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(3) > td:nth-child(4)',
+        admissionDate:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(3) > td:nth-child(6)',
+        lastCalendar:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(3) > td:nth-child(8)',
+        career:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(4) > td',
+        campus:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(5) > td',
+        location:
+          'body > div:nth-child(12) > table > tbody > tr:nth-child(6) > td',
+      },
     },
     studentProgress: {
       cell: '/html/body/div[5]/table[1]/tbody/tr[{i}]/td[{j}]',
@@ -56,6 +76,9 @@ export default {
         6: 'totalGpa',
         7: 'totalCredits',
         8: 'totalPercentage',
+      },
+      v1: {
+        table: 'body > div:nth-child(19) > table:nth-child(2)',
       },
     },
     studentGrades: {

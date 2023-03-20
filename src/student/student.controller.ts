@@ -23,25 +23,6 @@ export class StudentController {
   private readonly logger = new Logger('StudentController');
   constructor(private readonly studentService: StudentService) {}
 
-  @Get()
-  @ApiResponse(RootResponse)
-  @ApiHeaders(RootHeaders)
-  @ApiQuery(RootQuery)
-  async getStudent(
-    @Query() query: Record<string, any>,
-    @Req() request: Request,
-  ) {
-    const paramsRequested = this.parseStudentInfoQuery(query['query']);
-    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
-    const response = await this.studentService.getStudent(
-      request,
-      paramsRequested,
-      selectedCareer,
-    );
-    this.logger.debug({ data: response }, `Response`);
-    return response;
-  }
-
   @Get('/progress')
   @ApiResponse(ProgressResponse)
   @ApiHeaders(ProgressHeaders)
@@ -63,9 +44,7 @@ export class StudentController {
   @ApiHeaders(LoginHeaders)
   @Get('/login')
   async login(@Req() request: Request) {
-    const studentCode = request.headers['x-student-code'] as string;
-    const studentNip = request.headers['x-student-nip'] as string;
-    await this.studentService.login(studentCode, studentNip);
+    await this.studentService.login(request);
   }
 
   parseStudentInfoQuery(query: string): string[] {
@@ -78,5 +57,24 @@ export class StudentController {
 
   getSelectedCareer(selectedCareer: string): string {
     return selectedCareer ? selectedCareer.toUpperCase() : null;
+  }
+
+  @Get()
+  @ApiResponse(RootResponse)
+  @ApiHeaders(RootHeaders)
+  @ApiQuery(RootQuery)
+  async getStudent(
+    @Req() request: Request,
+    @Query() query: Record<string, any>,
+  ) {
+    const paramsRequested = this.parseStudentInfoQuery(query['query']);
+    const selectedCareer = this.getSelectedCareer(query['selectedCareer']);
+    const response = await this.studentService.getStudent(
+      request,
+      paramsRequested,
+      selectedCareer,
+    );
+    this.logger.debug({ data: response }, `Response`);
+    return response;
   }
 }

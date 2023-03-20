@@ -38,7 +38,6 @@ export class StudentParser {
     const rows = table.find('tr');
     const progressRows = rows.slice(2, rows.length - 1);
     let progress: StudentProgressResponse;
-    let total: StudentProgressTotal;
     const progressArray: StudentProgress[] = [];
     progressRows.each((index, row) => {
       const columns = $(row).find('td');
@@ -56,7 +55,7 @@ export class StudentParser {
     });
     const totalRow = rows.eq(rows.length - 1);
     const totalColumns = totalRow.find('th');
-    total = {
+    const total = {
       gpa: totalColumns.eq(5).text(),
       credits: totalColumns.eq(6).text(),
       percentage: totalColumns.eq(7).text().trim(),

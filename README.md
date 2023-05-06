@@ -1,3 +1,5 @@
+**NO LONGER MAINTAINED: siiau has improved security and all api endpoints will fail with Unauthorized error message**
+
 <p align="center">An HTTP API for quickly retrieving information from the SIIAU system</p>
 
 **We do not store student IDs nor passwords on our servers, this is a stateless API**

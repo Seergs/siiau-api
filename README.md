@@ -4,12 +4,6 @@
 
 **We do not store student IDs nor passwords on our servers, this is a stateless API**
 
-API base URL:
-
-- Primary: https://api.siiau.dev
-
-If you want to see the complete API specification, please see the [API reference](https://api.siiau.dev)
-
 Note: For every request you need to send headers `x-student-code` and `x-student-nip` to authenticate the user to the system.
 
 ### Information we can retrieve for you:
